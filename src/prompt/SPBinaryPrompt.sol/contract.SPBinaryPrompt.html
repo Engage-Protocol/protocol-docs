@@ -1,0 +1,560 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>SPBinaryPrompt - Engage Protocol</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../favicon.png">
+        <link rel="stylesheet" href="../../../css/variables.css">
+        <link rel="stylesheet" href="../../../css/general.css">
+        <link rel="stylesheet" href="../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../../../book.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../../../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../../../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Engage Protocol</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/Engage-Protocol/engage-protocol" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="spbinaryprompt"><a class="header" href="#spbinaryprompt">SPBinaryPrompt</a></h1>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/2890b2aea53065be300aa48413a18ae91f097053/src/prompt/SPBinaryPrompt.sol">Git Source</a></p>
+<p><strong>Inherits:</strong>
+Ownable, <a href="/src/prompt/IPromptStrategy.sol/interface.IPromptStrategy.html">IPromptStrategy</a>, ERC165</p>
+<p>Contract for managing binary choice questions with probability predictions</p>
+<p><em>This contract implements the IPromptStrategy interface for handling binary choice
+questions where players must predict both their answer choice and the probability
+of that answer being correct. The scoring system rewards players based on how
+close their probability prediction is to the actual outcome.</em></p>
+<h2 id="state-variables"><a class="header" href="#state-variables">State Variables</a></h2>
+<h3 id="precision"><a class="header" href="#precision">PRECISION</a></h3>
+<p>Precision factor for probability calculations (10000 = 100%)</p>
+<pre><code class="language-solidity">uint256 public constant PRECISION = 10_000;
+</code></pre>
+<h3 id="revealedquestions"><a class="header" href="#revealedquestions">revealedQuestions</a></h3>
+<p>Mapping from question ID to the revealed question data</p>
+<pre><code class="language-solidity">mapping(uint256 questionId =&gt; Prompt) public revealedQuestions;
+</code></pre>
+<h3 id="revealedat"><a class="header" href="#revealedat">revealedAt</a></h3>
+<p>Mapping from question ID to the timestamp when it was revealed</p>
+<pre><code class="language-solidity">mapping(uint256 questionId =&gt; uint256 timestamp) public revealedAt;
+</code></pre>
+<h3 id="reactions"><a class="header" href="#reactions">reactions</a></h3>
+<p>Mapping from question ID and player address to their reaction</p>
+<pre><code class="language-solidity">mapping(uint256 questionId =&gt; mapping(address player =&gt; Reaction reaction)) public reactions;
+</code></pre>
+<h3 id="resultaggregates"><a class="header" href="#resultaggregates">resultAggregates</a></h3>
+<p>Mapping from question ID to the aggregated results</p>
+<pre><code class="language-solidity">mapping(uint256 questionId =&gt; ResultAggregate result) public resultAggregates;
+</code></pre>
+<h3 id="results"><a class="header" href="#results">results</a></h3>
+<p>Mapping from question ID and user address to their result</p>
+<pre><code class="language-solidity">mapping(uint256 questionId =&gt; mapping(address user =&gt; Result)) public results;
+</code></pre>
+<h3 id="registry"><a class="header" href="#registry">registry</a></h3>
+<pre><code class="language-solidity">Registry public immutable registry;
+</code></pre>
+<h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
+<h3 id="constructor"><a class="header" href="#constructor">constructor</a></h3>
+<pre><code class="language-solidity">constructor(address _owner, address _registry) Ownable(_owner);
+</code></pre>
+<h3 id="revealquestion"><a class="header" href="#revealquestion">revealQuestion</a></h3>
+<p>Reveals a question to players</p>
+<p><em>This function is called by the session manager to make a question available to players</em></p>
+<pre><code class="language-solidity">function revealQuestion(bytes memory question, uint256 questionId) external;
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>question</code></td><td><code>bytes</code></td><td>The encoded question data</td></tr>
+<tr><td><code>questionId</code></td><td><code>uint256</code></td><td>The unique identifier for the question</td></tr>
+</tbody></table>
+</div>
+<h3 id="commitreaction"><a class="header" href="#commitreaction">commitReaction</a></h3>
+<p>Allows a player to commit an answer to a question</p>
+<p><em>Uses a commit-reveal scheme to prevent front-running. The actual answer is hidden
+until the reveal phase begins.</em></p>
+<pre><code class="language-solidity">function commitReaction(uint256 _gameId, uint256 _questionId, bytes32 _commit, address _user) external;
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the game</td></tr>
+<tr><td><code>_questionId</code></td><td><code>uint256</code></td><td>The ID of the question</td></tr>
+<tr><td><code>_commit</code></td><td><code>bytes32</code></td><td>The commitment hash of the player's answer</td></tr>
+<tr><td><code>_user</code></td><td><code>address</code></td><td>The address of the player</td></tr>
+</tbody></table>
+</div>
+<h3 id="revealreaction"><a class="header" href="#revealreaction">revealReaction</a></h3>
+<p>Allows a player to reveal their previously committed answer</p>
+<p><em>The revealed answer must match the commitment hash provided during commit phase</em></p>
+<pre><code class="language-solidity">function revealReaction(uint256 _gameId, uint256 _questionId, bytes calldata _selection, uint256 salt, address _user)
+    external;
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the game</td></tr>
+<tr><td><code>_questionId</code></td><td><code>uint256</code></td><td>The ID of the question</td></tr>
+<tr><td><code>_selection</code></td><td><code>bytes</code></td><td>The encoded answer selection</td></tr>
+<tr><td><code>salt</code></td><td><code>uint256</code></td><td>The salt used in the commitment</td></tr>
+<tr><td><code>_user</code></td><td><code>address</code></td><td>The address of the player</td></tr>
+</tbody></table>
+</div>
+<h3 id="getwinninganswer"><a class="header" href="#getwinninganswer">getWinningAnswer</a></h3>
+<p>Determines the winning answer based on the aggregated results</p>
+<pre><code class="language-solidity">function getWinningAnswer(uint256 questionId) public view returns (bool);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>questionId</code></td><td><code>uint256</code></td><td>The ID of the question</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>bool</code></td><td>True if answer A is the winner, false if answer B is the winner</td></tr>
+</tbody></table>
+</div>
+<h3 id="getscore"><a class="header" href="#getscore">getScore</a></h3>
+<p>Calculates the score for a player based on their probability prediction accuracy</p>
+<pre><code class="language-solidity">function getScore(uint256 questionId, address player) public view returns (uint256);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>questionId</code></td><td><code>uint256</code></td><td>The ID of the question</td></tr>
+<tr><td><code>player</code></td><td><code>address</code></td><td>The address of the player</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>uint256</code></td><td>The player's score (0-10000 scale)</td></tr>
+</tbody></table>
+</div>
+<h3 id="_getaveragediffs"><a class="header" href="#_getaveragediffs">_getAverageDiffs</a></h3>
+<p>Internal function to calculate the differences between answer and probability averages</p>
+<pre><code class="language-solidity">function _getAverageDiffs(uint256 questionId) internal view returns (int256, int256, bool);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>questionId</code></td><td><code>uint256</code></td><td>The ID of the question</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>int256</code></td><td>answerAAverageDiff The difference for answer A</td></tr>
+<tr><td><code>&lt;none&gt;</code></td><td><code>int256</code></td><td>answerBAverageDiff The difference for answer B</td></tr>
+<tr><td><code>&lt;none&gt;</code></td><td><code>bool</code></td><td>answerAIsWinner Whether answer A is the winner</td></tr>
+</tbody></table>
+</div>
+<h3 id="recordresult"><a class="header" href="#recordresult">recordResult</a></h3>
+<p>Records the result for a player after verification</p>
+<p><em>This function calculates and stores the XP and time result for a player
+after their placement has been verified.</em></p>
+<pre><code class="language-solidity">function recordResult(VerificationInfo calldata info) external;
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>info</code></td><td><code>VerificationInfo</code></td><td>The verification information containing player and placement data</td></tr>
+</tbody></table>
+</div>
+<h3 id="getreactiontime"><a class="header" href="#getreactiontime">getReactionTime</a></h3>
+<p>Gets the reaction time for a player on a specific question</p>
+<pre><code class="language-solidity">function getReactionTime(uint256 questionId, address player) public view returns (uint256);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>questionId</code></td><td><code>uint256</code></td><td>The ID of the question</td></tr>
+<tr><td><code>player</code></td><td><code>address</code></td><td>The address of the player</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>uint256</code></td><td>The time in seconds between question reveal and player's reaction</td></tr>
+</tbody></table>
+</div>
+<h3 id="_getreactiontime"><a class="header" href="#_getreactiontime">_getReactionTime</a></h3>
+<pre><code class="language-solidity">function _getReactionTime(uint256 questionId, address player) internal view returns (uint256);
+</code></pre>
+<h3 id="isrevealed"><a class="header" href="#isrevealed">isRevealed</a></h3>
+<p>Checks if a question has been revealed</p>
+<pre><code class="language-solidity">function isRevealed(uint256 questionId) external view returns (bool);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>questionId</code></td><td><code>uint256</code></td><td>The ID of the question</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>bool</code></td><td>True if the question has been revealed, false otherwise</td></tr>
+</tbody></table>
+</div>
+<h3 id="getresult"><a class="header" href="#getresult">getResult</a></h3>
+<p>Gets the result for a specific player on a specific question</p>
+<p><em>XP is calculated as: for a correct answer 1/2 of xpTiers[0] + 1/2 of xpTiers[0] * score (score is between 0 and 10000) / 10000, which means 100xp max.
+incorrect answer xpTiers[1] XP is rewarded.</em></p>
+<pre><code class="language-solidity">function getResult(uint256 gameId, uint256 questionId, address user) external view returns (Result memory);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>gameId</code></td><td><code>uint256</code></td><td>The ID of the game</td></tr>
+<tr><td><code>questionId</code></td><td><code>uint256</code></td><td>The ID of the question</td></tr>
+<tr><td><code>user</code></td><td><code>address</code></td><td>The address of the player</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>Result</code></td><td>The result containing XP earned and response time</td></tr>
+</tbody></table>
+</div>
+<h3 id="getquestion"><a class="header" href="#getquestion">getQuestion</a></h3>
+<p>Retrieves details of a single question</p>
+<pre><code class="language-solidity">function getQuestion(uint256 _questionId)
+    external
+    view
+    returns (
+        uint256 gameId,
+        string memory questionText,
+        uint256 reactionDeadline,
+        string memory finalizedAnswer,
+        string[2] memory choices
+    );
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_questionId</code></td><td><code>uint256</code></td><td>The ID of the question</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>gameId</code></td><td><code>uint256</code></td><td>The ID of the game this question belongs to</td></tr>
+<tr><td><code>questionText</code></td><td><code>string</code></td><td>The text of the question</td></tr>
+<tr><td><code>reactionDeadline</code></td><td><code>uint256</code></td><td>The deadline for players to commit their answers</td></tr>
+<tr><td><code>finalizedAnswer</code></td><td><code>string</code></td><td>The final answer after all votes are revealed</td></tr>
+<tr><td><code>choices</code></td><td><code>string[2]</code></td><td>Array of exactly 2 possible answer choices</td></tr>
+</tbody></table>
+</div>
+<h3 id="noop"><a class="header" href="#noop">noop</a></h3>
+<pre><code class="language-solidity">function noop(Prompt calldata p) external pure;
+</code></pre>
+<h3 id="supportsinterface"><a class="header" href="#supportsinterface">supportsInterface</a></h3>
+<pre><code class="language-solidity">function supportsInterface(bytes4 interfaceId) public view override(IERC165, ERC165) returns (bool);
+</code></pre>
+<h2 id="events"><a class="header" href="#events">Events</a></h2>
+<h3 id="answerrevealed"><a class="header" href="#answerrevealed">AnswerRevealed</a></h3>
+<pre><code class="language-solidity">event AnswerRevealed(
+    uint256 indexed gameId, uint256 indexed questionId, address indexed player, bool answer, int16 probability
+);
+</code></pre>
+<h2 id="errors"><a class="header" href="#errors">Errors</a></h2>
+<h3 id="revealmismatch"><a class="header" href="#revealmismatch">RevealMismatch</a></h3>
+<pre><code class="language-solidity">error RevealMismatch(uint256 gameId, uint256 questionId, bool answer, int16 probability, uint256 salt, bytes32 commit);
+</code></pre>
+<h3 id="nochoices"><a class="header" href="#nochoices">NoChoices</a></h3>
+<pre><code class="language-solidity">error NoChoices(uint256 questionId);
+</code></pre>
+<h3 id="invalidorderlength"><a class="header" href="#invalidorderlength">InvalidOrderLength</a></h3>
+<pre><code class="language-solidity">error InvalidOrderLength(uint256 length);
+</code></pre>
+<h3 id="invalidorder"><a class="header" href="#invalidorder">InvalidOrder</a></h3>
+<pre><code class="language-solidity">error InvalidOrder();
+</code></pre>
+<h3 id="invalidposition"><a class="header" href="#invalidposition">InvalidPosition</a></h3>
+<pre><code class="language-solidity">error InvalidPosition(address player, address actualPlayer);
+</code></pre>
+<h3 id="invalidtiedchoiceslength"><a class="header" href="#invalidtiedchoiceslength">InvalidTiedChoicesLength</a></h3>
+<pre><code class="language-solidity">error InvalidTiedChoicesLength(uint256 fasterPicksInTiedChoicesLength, uint256 tiedChoicesLength);
+</code></pre>
+<h3 id="incorrecttiedchoiceplacement"><a class="header" href="#incorrecttiedchoiceplacement">IncorrectTiedChoicePlacement</a></h3>
+<pre><code class="language-solidity">error IncorrectTiedChoicePlacement(address player, address lastFastestPlayerInTiedChoice);
+</code></pre>
+<h2 id="structs"><a class="header" href="#structs">Structs</a></h2>
+<h3 id="prompt"><a class="header" href="#prompt">Prompt</a></h3>
+<p>Structure containing all the data for a revealed question</p>
+<p><em>This struct holds all the information needed to display and process a binary question</em></p>
+<pre><code class="language-solidity">struct Prompt {
+    address sessionManager;
+    uint256 gameId;
+    string questionText;
+    uint256 reactionDeadline;
+    string finalizedAnswer;
+    uint16 personalAverage;
+    uint16 probabilityAverage;
+    string[2] choices;
+    string[] media;
+}
+</code></pre>
+<p><strong>Properties</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>sessionManager</code></td><td><code>address</code></td><td>Address of the session manager where the question belongs to</td></tr>
+<tr><td><code>gameId</code></td><td><code>uint256</code></td><td>ID of the game this question belongs to</td></tr>
+<tr><td><code>questionText</code></td><td><code>string</code></td><td>Text of the question</td></tr>
+<tr><td><code>reactionDeadline</code></td><td><code>uint256</code></td><td>Deadline for players to commit their answers</td></tr>
+<tr><td><code>finalizedAnswer</code></td><td><code>string</code></td><td>Final answer after all votes are revealed</td></tr>
+<tr><td><code>personalAverage</code></td><td><code>uint16</code></td><td>Personal average score for the player</td></tr>
+<tr><td><code>probabilityAverage</code></td><td><code>uint16</code></td><td>Average probability prediction across all players</td></tr>
+<tr><td><code>choices</code></td><td><code>string[2]</code></td><td>Array of exactly 2 possible answer choices</td></tr>
+<tr><td><code>media</code></td><td><code>string[]</code></td><td>Array of media URLs associated with the question</td></tr>
+</tbody></table>
+</div>
+<h3 id="reaction"><a class="header" href="#reaction">Reaction</a></h3>
+<p>Structure for storing a player's reaction to a question</p>
+<p><em>Extends BaseReaction with the specific answer choice and probability prediction</em></p>
+<pre><code class="language-solidity">struct Reaction {
+    BaseReaction baseReaction;
+    bool answer;
+    int16 probability;
+}
+</code></pre>
+<p><strong>Properties</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>baseReaction</code></td><td><code>BaseReaction</code></td><td>Base reaction data (commit, timestamp, etc.)</td></tr>
+<tr><td><code>answer</code></td><td><code>bool</code></td><td>The binary answer choice selected by the player</td></tr>
+<tr><td><code>probability</code></td><td><code>int16</code></td><td>The player's probability prediction (0-10000 scale)</td></tr>
+</tbody></table>
+</div>
+<h3 id="verificationinfo"><a class="header" href="#verificationinfo">VerificationInfo</a></h3>
+<p>Structure for verifying player placement in the results</p>
+<p><em>Used during result calculation to verify the player's position in the ranking</em></p>
+<pre><code class="language-solidity">struct VerificationInfo {
+    uint256 questionId;
+    address player;
+    uint256 pickPosition;
+}
+</code></pre>
+<p><strong>Properties</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>questionId</code></td><td><code>uint256</code></td><td>ID of the question</td></tr>
+<tr><td><code>player</code></td><td><code>address</code></td><td>Address of the player</td></tr>
+<tr><td><code>pickPosition</code></td><td><code>uint256</code></td><td>Position of the player's choice in the final ranking</td></tr>
+</tbody></table>
+</div>
+<h3 id="resultaggregate"><a class="header" href="#resultaggregate">ResultAggregate</a></h3>
+<p>Structure for aggregating results across all players</p>
+<p><em>Contains running totals and averages for answer choices and probability predictions</em></p>
+<pre><code class="language-solidity">struct ResultAggregate {
+    int256 answerTotal;
+    int256 probabilityTotal;
+    int256 respondents;
+    int256 answerAverage;
+    int256 probabilityAverage;
+}
+</code></pre>
+<p><strong>Properties</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>answerTotal</code></td><td><code>int256</code></td><td>Total of all answer choices (weighted by PRECISION)</td></tr>
+<tr><td><code>probabilityTotal</code></td><td><code>int256</code></td><td>Total of all probability predictions</td></tr>
+<tr><td><code>respondents</code></td><td><code>int256</code></td><td>Number of players who have revealed their answers</td></tr>
+<tr><td><code>answerAverage</code></td><td><code>int256</code></td><td>Average answer choice across all players</td></tr>
+<tr><td><code>probabilityAverage</code></td><td><code>int256</code></td><td>Average probability prediction across all players</td></tr>
+</tbody></table>
+</div>
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../../src/prompt/MajorityChoicePrompt.sol/contract.MajorityChoicePrompt.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../../../src/prompt/TriviaChoicePrompt.sol/contract.TriviaChoicePrompt.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../../src/prompt/MajorityChoicePrompt.sol/contract.MajorityChoicePrompt.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../../../src/prompt/TriviaChoicePrompt.sol/contract.TriviaChoicePrompt.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../../elasticlunr.min.js"></script>
+        <script src="../../../mark.min.js"></script>
+        <script src="../../../searcher.js"></script>
+
+        <script src="../../../clipboard.min.js"></script>
+        <script src="../../../highlight.js"></script>
+        <script src="../../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../../../solidity.min.js"></script>
+
+
+    </div>
+    </body>
+</html>
