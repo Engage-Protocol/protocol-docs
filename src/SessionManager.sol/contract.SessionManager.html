@@ -162,7 +162,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="sessionmanager"><a class="header" href="#sessionmanager">SessionManager</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/2890b2aea53065be300aa48413a18ae91f097053/src/SessionManager.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/SessionManager.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="/src/QuestionManager.sol/abstract.QuestionManager.html">QuestionManager</a></p>
 <p>Core contract managing the lifecycle of sessions</p>
@@ -225,7 +225,7 @@
 </code></pre>
 <h3 id="liveness"><a class="header" href="#liveness">liveness</a></h3>
 <p>Mapping of participant addresses to their last liveness check</p>
-<pre><code class="language-solidity">mapping(address =&gt; uint256 timestamp) liveness;
+<pre><code class="language-solidity">mapping(address =&gt; uint256 timestamp) public liveness;
 </code></pre>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="constructor"><a class="header" href="#constructor">constructor</a></h3>
@@ -743,6 +743,9 @@
 </code></pre>
 <h3 id="livenessdurationset"><a class="header" href="#livenessdurationset">LivenessDurationSet</a></h3>
 <pre><code class="language-solidity">event LivenessDurationSet(uint256 livenessDuration);
+</code></pre>
+<h3 id="livenessset"><a class="header" href="#livenessset">LivenessSet</a></h3>
+<pre><code class="language-solidity">event LivenessSet(address indexed player);
 </code></pre>
 <h3 id="creationsunsettedset"><a class="header" href="#creationsunsettedset">CreationSunsettedSet</a></h3>
 <pre><code class="language-solidity">event CreationSunsettedSet(bool creationSunsetted);

@@ -171,6 +171,9 @@
 <li>RewardStrategies: manages how many points are given for answering a prompt</li>
 <li>PromptStrategies: a prompt strategy implements a certain prompt type which can be used in a session</li>
 </ul>
+<h2 id="architecture"><a class="header" href="#architecture">Architecture</a></h2>
+<h3 id="session-sequence-diagram"><a class="header" href="#session-sequence-diagram">Session Sequence Diagram</a></h3>
+<p><img src="diagrams/engage-sequence-diagram.svg" alt="SVG Image" /></p>
 <h2 id="development"><a class="header" href="#development">Development</a></h2>
 <p>Development and deployment is done using (foundry)[https://getfoundry.sh/introduction/overview].</p>
 <h3 id="build"><a class="header" href="#build">Build</a></h3>
@@ -191,7 +194,7 @@
 <li><a href="src/offchain/uma/SessionResultAsserter.sol/abstract.SessionResultAsserter.html">SessionResultAsserter</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="sessionresultasserter"><a class="header" href="#sessionresultasserter">SessionResultAsserter</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/2890b2aea53065be300aa48413a18ae91f097053/src/offchain/uma/SessionResultAsserter.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/offchain/uma/SessionResultAsserter.sol">Git Source</a></p>
 <h2 id="state-variables"><a class="header" href="#state-variables">State Variables</a></h2>
 <h3 id="usdc"><a class="header" href="#usdc">usdc</a></h3>
 <pre><code class="language-solidity">IERC20 public immutable usdc;
@@ -284,7 +287,7 @@
 <li><a href="src/prompt/TriviaChoicePrompt.sol/contract.TriviaChoicePrompt.html">TriviaChoicePrompt</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="basereaction"><a class="header" href="#basereaction">BaseReaction</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/2890b2aea53065be300aa48413a18ae91f097053/src/prompt/IPromptStrategy.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/prompt/IPromptStrategy.sol">Git Source</a></p>
 <pre><code class="language-solidity">struct BaseReaction {
     bytes32 commit;
     uint256 timestamp;
@@ -300,7 +303,7 @@
 <tr><td><code>revealed</code></td><td><code>bool</code></td><td>Whether the reaction has been revealed</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="result"><a class="header" href="#result">Result</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/2890b2aea53065be300aa48413a18ae91f097053/src/prompt/IPromptStrategy.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/prompt/IPromptStrategy.sol">Git Source</a></p>
 <p>Structure containing the result of a player's participation in a question</p>
 <pre><code class="language-solidity">struct Result {
     uint256 xp;
@@ -313,7 +316,7 @@
 <tr><td><code>time</code></td><td><code>uint256</code></td><td>Time taken by the player to respond (in seconds)</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="ipromptstrategy"><a class="header" href="#ipromptstrategy">IPromptStrategy</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/2890b2aea53065be300aa48413a18ae91f097053/src/prompt/IPromptStrategy.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/prompt/IPromptStrategy.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 IERC165</p>
 <p>Interface for prompt strategy contracts that manage question presentation and answer collection</p>
@@ -390,6 +393,18 @@ until the reveal phase begins.</em></p>
 <tr><td><code>&lt;none&gt;</code></td><td><code>bool</code></td><td>True if the question has been revealed, false otherwise</td></tr>
 </tbody></table>
 </div>
+<h3 id="recordresult"><a class="header" href="#recordresult">recordResult</a></h3>
+<p>Records the result for a player</p>
+<pre><code class="language-solidity">function recordResult(uint256 questionId, address player, uint256 xp, uint256 time) external;
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>questionId</code></td><td><code>uint256</code></td><td>The ID of the question</td></tr>
+<tr><td><code>player</code></td><td><code>address</code></td><td>The address of the player</td></tr>
+<tr><td><code>xp</code></td><td><code>uint256</code></td><td>The XP value for the player</td></tr>
+<tr><td><code>time</code></td><td><code>uint256</code></td><td>The time value for the player</td></tr>
+</tbody></table>
+</div>
 <h3 id="getresult"><a class="header" href="#getresult">getResult</a></h3>
 <p>Gets the result for a specific player on a specific question</p>
 <pre><code class="language-solidity">function getResult(uint256 gameId, uint256 questionId, address user) external view returns (Result memory);
@@ -413,6 +428,9 @@ until the reveal phase begins.</em></p>
 <h2 id="errors-1"><a class="header" href="#errors-1">Errors</a></h2>
 <h3 id="onlysessionmanager"><a class="header" href="#onlysessionmanager">OnlySessionManager</a></h3>
 <pre><code class="language-solidity">error OnlySessionManager(address sessionManager, address caller);
+</code></pre>
+<h3 id="onlysessionstrategy"><a class="header" href="#onlysessionstrategy">OnlySessionStrategy</a></h3>
+<pre><code class="language-solidity">error OnlySessionStrategy(address sessionStrategy, address caller);
 </code></pre>
 <h3 id="invalidgamestate"><a class="header" href="#invalidgamestate">InvalidGameState</a></h3>
 <pre><code class="language-solidity">error InvalidGameState(SessionState expected, SessionState actual);
@@ -444,8 +462,14 @@ until the reveal phase begins.</em></p>
 <h3 id="invalidpromptcall"><a class="header" href="#invalidpromptcall">InvalidPromptCall</a></h3>
 <pre><code class="language-solidity">error InvalidPromptCall(uint256 questionId, address promptStrategy);
 </code></pre>
+<h3 id="xpmismatch"><a class="header" href="#xpmismatch">XpMismatch</a></h3>
+<pre><code class="language-solidity">error XpMismatch(uint256 xp, uint256 assertionXp);
+</code></pre>
+<h3 id="timemismatch"><a class="header" href="#timemismatch">TimeMismatch</a></h3>
+<pre><code class="language-solidity">error TimeMismatch(uint256 time, uint256 assertionTime);
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="majoritychoiceprompt"><a class="header" href="#majoritychoiceprompt">MajorityChoicePrompt</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/2890b2aea53065be300aa48413a18ae91f097053/src/prompt/MajorityChoicePrompt.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/prompt/MajorityChoicePrompt.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 Ownable, <a href="src/prompt/MajorityChoicePrompt.sol//src/prompt/IPromptStrategy.sol/interface.IPromptStrategy.html">IPromptStrategy</a>, ERC165</p>
 <p>Contract for managing majority choice questions where the most popular answer wins</p>
@@ -521,26 +545,16 @@ until the reveal phase begins.</em></p>
 <tr><td><code>_user</code></td><td><code>address</code></td><td>The address of the player</td></tr>
 </tbody></table>
 </div>
-<h3 id="verifyplacement"><a class="header" href="#verifyplacement">verifyPlacement</a></h3>
-<p>Verifies that a player's placement in the results is correct</p>
-<p><em>This function validates that the provided order array is properly sorted
-and that the player is in the correct position for their choice.</em></p>
-<pre><code class="language-solidity">function verifyPlacement(VerificationInfo calldata info) public view;
+<h3 id="recordresult-1"><a class="header" href="#recordresult-1">recordResult</a></h3>
+<p>Records the result for a player</p>
+<pre><code class="language-solidity">function recordResult(uint256 questionId, address player, uint256 xp, uint256 time) external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>info</code></td><td><code>VerificationInfo</code></td><td>The verification information containing player and placement data</td></tr>
-</tbody></table>
-</div>
-<h3 id="recordresult"><a class="header" href="#recordresult">recordResult</a></h3>
-<p>Records the result for a player after verification</p>
-<p><em>This function calculates and stores the XP and time result for a player
-after their placement has been verified.</em></p>
-<pre><code class="language-solidity">function recordResult(VerificationInfo calldata info) external;
-</code></pre>
-<p><strong>Parameters</strong></p>
-<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>info</code></td><td><code>VerificationInfo</code></td><td>The verification information containing player and placement data</td></tr>
+<tr><td><code>questionId</code></td><td><code>uint256</code></td><td>The ID of the question</td></tr>
+<tr><td><code>player</code></td><td><code>address</code></td><td>The address of the player</td></tr>
+<tr><td><code>xp</code></td><td><code>uint256</code></td><td>The XP value for the player</td></tr>
+<tr><td><code>time</code></td><td><code>uint256</code></td><td>The time value for the player</td></tr>
 </tbody></table>
 </div>
 <h3 id="getreactiontime-1"><a class="header" href="#getreactiontime-1">getReactionTime</a></h3>
@@ -679,33 +693,12 @@ after their placement has been verified.</em></p>
 <tr><td><code>baseReaction</code></td><td><code>BaseReaction</code></td><td>Base reaction data (commit, timestamp, etc.)</td></tr>
 <tr><td><code>answer</code></td><td><code>uint16</code></td><td>The answer choice selected by the player (0-indexed)</td></tr>
 </tbody></table>
-</div>
-<h3 id="verificationinfo"><a class="header" href="#verificationinfo">VerificationInfo</a></h3>
-<p>Structure for verifying player placement in the results</p>
-<p><em>Used during result calculation until verifiable offchain computation is implemented</em></p>
-<pre><code class="language-solidity">struct VerificationInfo {
-    uint256 questionId;
-    uint256 position;
-    address player;
-    uint16 pick;
-    uint16 pickPosition;
-    uint256[] order;
-}
-</code></pre>
-<p><strong>Properties</strong></p>
-<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>questionId</code></td><td><code>uint256</code></td><td>ID of the question</td></tr>
-<tr><td><code>position</code></td><td><code>uint256</code></td><td>Position of the player in the choice ranking</td></tr>
-<tr><td><code>player</code></td><td><code>address</code></td><td>Address of the player</td></tr>
-<tr><td><code>pick</code></td><td><code>uint16</code></td><td>The choice the player selected</td></tr>
-<tr><td><code>pickPosition</code></td><td><code>uint16</code></td><td>Position of the player's choice in the final ranking</td></tr>
-<tr><td><code>order</code></td><td><code>uint256[]</code></td><td>Array representing the final ranking of choices</td></tr>
-</tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="spbinaryprompt"><a class="header" href="#spbinaryprompt">SPBinaryPrompt</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/2890b2aea53065be300aa48413a18ae91f097053/src/prompt/SPBinaryPrompt.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/prompt/SPBinaryPrompt.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 Ownable, <a href="src/prompt/SPBinaryPrompt.sol//src/prompt/IPromptStrategy.sol/interface.IPromptStrategy.html">IPromptStrategy</a>, ERC165</p>
-<p>Contract for managing binary choice questions with probability predictions</p>
+<p>Contract for managing binary choice questions based on the Surprisingly Popular
+method https://www.nature.com/articles/nature21054</p>
 <p><em>This contract implements the IPromptStrategy interface for handling binary choice
 questions where players must predict both their answer choice and the probability
 of that answer being correct. The scoring system rewards players based on how
@@ -827,15 +820,16 @@ until the reveal phase begins.</em></p>
 <tr><td><code>&lt;none&gt;</code></td><td><code>bool</code></td><td>answerAIsWinner Whether answer A is the winner</td></tr>
 </tbody></table>
 </div>
-<h3 id="recordresult-1"><a class="header" href="#recordresult-1">recordResult</a></h3>
-<p>Records the result for a player after verification</p>
-<p><em>This function calculates and stores the XP and time result for a player
-after their placement has been verified.</em></p>
-<pre><code class="language-solidity">function recordResult(VerificationInfo calldata info) external;
+<h3 id="recordresult-2"><a class="header" href="#recordresult-2">recordResult</a></h3>
+<p>Records the result for a player</p>
+<pre><code class="language-solidity">function recordResult(uint256 questionId, address player, uint256 xp, uint256 time) external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>info</code></td><td><code>VerificationInfo</code></td><td>The verification information containing player and placement data</td></tr>
+<tr><td><code>questionId</code></td><td><code>uint256</code></td><td>The ID of the question</td></tr>
+<tr><td><code>player</code></td><td><code>address</code></td><td>The address of the player</td></tr>
+<tr><td><code>xp</code></td><td><code>uint256</code></td><td>The XP value for the player</td></tr>
+<tr><td><code>time</code></td><td><code>uint256</code></td><td>The time value for the player</td></tr>
 </tbody></table>
 </div>
 <h3 id="getreactiontime-2"><a class="header" href="#getreactiontime-2">getReactionTime</a></h3>
@@ -874,7 +868,7 @@ after their placement has been verified.</em></p>
 <p>Gets the result for a specific player on a specific question</p>
 <p><em>XP is calculated as: for a correct answer 1/2 of xpTiers[0] + 1/2 of xpTiers[0] * score (score is between 0 and 10000) / 10000, which means 100xp max.
 incorrect answer xpTiers[1] XP is rewarded.</em></p>
-<pre><code class="language-solidity">function getResult(uint256 gameId, uint256 questionId, address user) external view returns (Result memory);
+<pre><code class="language-solidity">function getResult(uint256 gameId, uint256 questionId, address user) public view returns (Result memory);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -924,12 +918,12 @@ incorrect answer xpTiers[1] XP is rewarded.</em></p>
 <h2 id="events-3"><a class="header" href="#events-3">Events</a></h2>
 <h3 id="answerrevealed-1"><a class="header" href="#answerrevealed-1">AnswerRevealed</a></h3>
 <pre><code class="language-solidity">event AnswerRevealed(
-    uint256 indexed gameId, uint256 indexed questionId, address indexed player, bool answer, int16 probability
+    uint256 indexed gameId, uint256 indexed questionId, address indexed player, bool answer, uint16 probability
 );
 </code></pre>
 <h2 id="errors-3"><a class="header" href="#errors-3">Errors</a></h2>
 <h3 id="revealmismatch-1"><a class="header" href="#revealmismatch-1">RevealMismatch</a></h3>
-<pre><code class="language-solidity">error RevealMismatch(uint256 gameId, uint256 questionId, bool answer, int16 probability, uint256 salt, bytes32 commit);
+<pre><code class="language-solidity">error RevealMismatch(uint256 gameId, uint256 questionId, bool answer, uint16 probability, uint256 salt, bytes32 commit);
 </code></pre>
 <h3 id="nochoices"><a class="header" href="#nochoices">NoChoices</a></h3>
 <pre><code class="language-solidity">error NoChoices(uint256 questionId);
@@ -984,53 +978,37 @@ incorrect answer xpTiers[1] XP is rewarded.</em></p>
 <pre><code class="language-solidity">struct Reaction {
     BaseReaction baseReaction;
     bool answer;
-    int16 probability;
+    uint16 probability;
 }
 </code></pre>
 <p><strong>Properties</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
 <tr><td><code>baseReaction</code></td><td><code>BaseReaction</code></td><td>Base reaction data (commit, timestamp, etc.)</td></tr>
 <tr><td><code>answer</code></td><td><code>bool</code></td><td>The binary answer choice selected by the player</td></tr>
-<tr><td><code>probability</code></td><td><code>int16</code></td><td>The player's probability prediction (0-10000 scale)</td></tr>
-</tbody></table>
-</div>
-<h3 id="verificationinfo-1"><a class="header" href="#verificationinfo-1">VerificationInfo</a></h3>
-<p>Structure for verifying player placement in the results</p>
-<p><em>Used during result calculation to verify the player's position in the ranking</em></p>
-<pre><code class="language-solidity">struct VerificationInfo {
-    uint256 questionId;
-    address player;
-    uint256 pickPosition;
-}
-</code></pre>
-<p><strong>Properties</strong></p>
-<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>questionId</code></td><td><code>uint256</code></td><td>ID of the question</td></tr>
-<tr><td><code>player</code></td><td><code>address</code></td><td>Address of the player</td></tr>
-<tr><td><code>pickPosition</code></td><td><code>uint256</code></td><td>Position of the player's choice in the final ranking</td></tr>
+<tr><td><code>probability</code></td><td><code>uint16</code></td><td>The player's probability prediction (0-10000 scale)</td></tr>
 </tbody></table>
 </div>
 <h3 id="resultaggregate"><a class="header" href="#resultaggregate">ResultAggregate</a></h3>
 <p>Structure for aggregating results across all players</p>
 <p><em>Contains running totals and averages for answer choices and probability predictions</em></p>
 <pre><code class="language-solidity">struct ResultAggregate {
-    int256 answerTotal;
-    int256 probabilityTotal;
-    int256 respondents;
-    int256 answerAverage;
-    int256 probabilityAverage;
+    uint256 answerTotal;
+    uint256 probabilityTotal;
+    uint256 respondents;
+    uint256 answerAverage;
+    uint256 probabilityAverage;
 }
 </code></pre>
 <p><strong>Properties</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>answerTotal</code></td><td><code>int256</code></td><td>Total of all answer choices (weighted by PRECISION)</td></tr>
-<tr><td><code>probabilityTotal</code></td><td><code>int256</code></td><td>Total of all probability predictions</td></tr>
-<tr><td><code>respondents</code></td><td><code>int256</code></td><td>Number of players who have revealed their answers</td></tr>
-<tr><td><code>answerAverage</code></td><td><code>int256</code></td><td>Average answer choice across all players</td></tr>
-<tr><td><code>probabilityAverage</code></td><td><code>int256</code></td><td>Average probability prediction across all players</td></tr>
+<tr><td><code>answerTotal</code></td><td><code>uint256</code></td><td>Total of all answer choices (weighted by PRECISION)</td></tr>
+<tr><td><code>probabilityTotal</code></td><td><code>uint256</code></td><td>Total of all probability predictions</td></tr>
+<tr><td><code>respondents</code></td><td><code>uint256</code></td><td>Number of players who have revealed their answers</td></tr>
+<tr><td><code>answerAverage</code></td><td><code>uint256</code></td><td>Average answer choice across all players</td></tr>
+<tr><td><code>probabilityAverage</code></td><td><code>uint256</code></td><td>Average probability prediction across all players</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="triviachoiceprompt"><a class="header" href="#triviachoiceprompt">TriviaChoicePrompt</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/2890b2aea53065be300aa48413a18ae91f097053/src/prompt/TriviaChoicePrompt.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/prompt/TriviaChoicePrompt.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/prompt/TriviaChoicePrompt.sol//src/prompt/IPromptStrategy.sol/interface.IPromptStrategy.html">IPromptStrategy</a>, ERC165</p>
 <p>Contract for managing trivia questions with predefined correct answers</p>
@@ -1152,7 +1130,7 @@ until the reveal phase begins.</em></p>
 <p>Gets the result for a specific player on a specific question</p>
 <p><em>The result is calculated based on whether the player's answer matches the correct solution.
 Players who answer correctly get XP from the first tier, while incorrect answers get XP from the second tier.</em></p>
-<pre><code class="language-solidity">function getResult(uint256 gameId, uint256 questionId, address user) external view returns (Result memory);
+<pre><code class="language-solidity">function getResult(uint256 gameId, uint256 questionId, address user) public view returns (Result memory);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -1164,6 +1142,19 @@ Players who answer correctly get XP from the first tier, while incorrect answers
 <p><strong>Returns</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
 <tr><td><code>&lt;none&gt;</code></td><td><code>Result</code></td><td>The result containing XP earned and response time</td></tr>
+</tbody></table>
+</div>
+<h3 id="recordresult-3"><a class="header" href="#recordresult-3">recordResult</a></h3>
+<p>Records the result for a player</p>
+<p><em>Trivia results are calculated onchain so there's no need to record the result by an oracle</em></p>
+<pre><code class="language-solidity">function recordResult(uint256, address, uint256, uint256) external pure;
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>uint256</code></td><td></td></tr>
+<tr><td><code>&lt;none&gt;</code></td><td><code>address</code></td><td></td></tr>
+<tr><td><code>&lt;none&gt;</code></td><td><code>uint256</code></td><td></td></tr>
+<tr><td><code>&lt;none&gt;</code></td><td><code>uint256</code></td><td></td></tr>
 </tbody></table>
 </div>
 <h3 id="getreactiontime-3"><a class="header" href="#getreactiontime-3">getReactionTime</a></h3>
@@ -1248,7 +1239,7 @@ Players who answer correctly get XP from the first tier, while incorrect answers
 <li><a href="src/reward/ProportionalToXPReward.sol/contract.ProportionalToXPReward.html">ProportionalToXPReward</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="fixedranksreward"><a class="header" href="#fixedranksreward">FixedRanksReward</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/2890b2aea53065be300aa48413a18ae91f097053/src/reward/FixedRanksReward.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/reward/FixedRanksReward.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/reward/FixedRanksReward.sol//src/reward/IRewardStrategy.sol/interface.IRewardStrategy.html">IRewardStrategy</a>, ERC165</p>
 <p>Contract for distributing rewards based on predefined rank percentages</p>
@@ -1343,7 +1334,7 @@ must equal 100% (10,000 basis points). Can only be set once per game.</em></p>
 <pre><code class="language-solidity">error InvalidTotalPoints(uint256 sessionId, uint256 numPoints);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="irewardstrategy"><a class="header" href="#irewardstrategy">IRewardStrategy</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/2890b2aea53065be300aa48413a18ae91f097053/src/reward/IRewardStrategy.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/reward/IRewardStrategy.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 IERC165</p>
 <p>Interface for reward strategy contracts that determine how prize pools are distributed among winners</p>
@@ -1400,7 +1391,7 @@ to players based on their performance in games. It extends IERC165 for interface
 <pre><code class="language-solidity">error NotCreated(uint256 sessionId);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="proportionaltoxpreward"><a class="header" href="#proportionaltoxpreward">ProportionalToXPReward</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/2890b2aea53065be300aa48413a18ae91f097053/src/reward/ProportionalToXPReward.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/reward/ProportionalToXPReward.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/reward/ProportionalToXPReward.sol//src/reward/IRewardStrategy.sol/interface.IRewardStrategy.html">IRewardStrategy</a>, ERC165</p>
 <p>Contract for distributing rewards proportionally based on players' XP earned</p>
@@ -1474,7 +1465,7 @@ receive a larger share of the prize pool.</em></p>
 <li><a href="src/session/ISessionStrategy.sol/interface.ISessionStrategy.html">ISessionStrategy</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="defaultsession"><a class="header" href="#defaultsession">DefaultSession</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/2890b2aea53065be300aa48413a18ae91f097053/src/session/DefaultSession.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/session/DefaultSession.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/session/DefaultSession.sol//src/session/ISessionStrategy.sol/interface.ISessionStrategy.html">ISessionStrategy</a>, ERC165, Ownable, <a href="src/session/DefaultSession.sol//src/offchain/uma/SessionResultAsserter.sol/abstract.SessionResultAsserter.html">SessionResultAsserter</a></p>
 <p>Contract for managing default game sessions with XP-based scoring and winner determination</p>
@@ -1551,10 +1542,10 @@ winners based on total performance. Only the owner can record final results.</em
 <h3 id="setxptiers"><a class="header" href="#setxptiers">setXPTiers</a></h3>
 <pre><code class="language-solidity">function setXPTiers(uint256 gameId, uint256[] memory _xpTiers) external;
 </code></pre>
-<h3 id="calculateplayersessionresult"><a class="header" href="#calculateplayersessionresult">calculatePlayerSessionResult</a></h3>
+<h3 id="_calculateplayersessionresult"><a class="header" href="#_calculateplayersessionresult">_calculatePlayerSessionResult</a></h3>
 <p>Calculate a player's total XP and time across all prompts in a session</p>
-<pre><code class="language-solidity">function calculatePlayerSessionResult(uint256 gameId, address player)
-    public
+<pre><code class="language-solidity">function _calculatePlayerSessionResult(uint256 gameId, address player)
+    internal
     view
     returns (uint256 totalXP, uint256 totalTime);
 </code></pre>
@@ -1578,7 +1569,7 @@ winners based on total performance. Only the owner can record final results.</em
     address[] calldata proposedWinners,
     uint256[] calldata totalXPs,
     uint256[] calldata totalTimes
-) external onlyOwner returns (bytes32 assertionId);
+) external returns (bytes32 assertionId);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -1591,7 +1582,7 @@ winners based on total performance. Only the owner can record final results.</em
 </div>
 <h3 id="recordresults"><a class="header" href="#recordresults">recordResults</a></h3>
 <p>Record the results for a session</p>
-<pre><code class="language-solidity">function recordResults(uint256 sessionId, bytes32 assertionId) public;
+<pre><code class="language-solidity">function recordResults(uint256 sessionId, bytes32 assertionId) external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -1649,12 +1640,6 @@ winners based on total performance. Only the owner can record final results.</em
 <h3 id="sessionidmismatch"><a class="header" href="#sessionidmismatch">SessionIdMismatch</a></h3>
 <pre><code class="language-solidity">error SessionIdMismatch(uint256 sessionId, uint256 assertionSessionId);
 </code></pre>
-<h3 id="xpmismatch"><a class="header" href="#xpmismatch">XpMismatch</a></h3>
-<pre><code class="language-solidity">error XpMismatch(uint256 xp, uint256 assertionXp);
-</code></pre>
-<h3 id="timemismatch"><a class="header" href="#timemismatch">TimeMismatch</a></h3>
-<pre><code class="language-solidity">error TimeMismatch(uint256 time, uint256 assertionTime);
-</code></pre>
 <h2 id="structs-4"><a class="header" href="#structs-4">Structs</a></h2>
 <h3 id="sessionresult"><a class="header" href="#sessionresult">SessionResult</a></h3>
 <p>Structure containing a player's complete session result</p>
@@ -1671,7 +1656,7 @@ winners based on total performance. Only the owner can record final results.</em
 <tr><td><code>time</code></td><td><code>uint256</code></td><td>The total time taken by the player across all questions</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="isessionstrategy"><a class="header" href="#isessionstrategy">ISessionStrategy</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/2890b2aea53065be300aa48413a18ae91f097053/src/session/ISessionStrategy.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/session/ISessionStrategy.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 IERC165</p>
 <p>Interface for session strategy contracts that manage game sessions and player results</p>
@@ -1810,7 +1795,7 @@ player results, and determining winners. It extends IERC165 for interface detect
 <pre><code class="language-solidity">error InvalidQuestionId(uint256 questionId);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="depositmanager"><a class="header" href="#depositmanager">DepositManager</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/2890b2aea53065be300aa48413a18ae91f097053/src/DepositManager.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/DepositManager.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/DepositManager.sol//src/SessionManagerBase.sol/abstract.SessionManagerBase.html">SessionManagerBase</a></p>
 <p>Manages deposits, fees, and rewards for sessions</p>
@@ -1919,6 +1904,16 @@ player results, and determining winners. It extends IERC165 for interface detect
 </tbody></table>
 </div>
 <h2 id="events-8"><a class="header" href="#events-8">Events</a></h2>
+<h3 id="feesdistributed"><a class="header" href="#feesdistributed">FeesDistributed</a></h3>
+<pre><code class="language-solidity">event FeesDistributed(
+    uint256 indexed gameId,
+    address token,
+    address indexed creator,
+    uint256 creatorFee,
+    address protocolTreasury,
+    uint256 protocolFee
+);
+</code></pre>
 <h3 id="deposit"><a class="header" href="#deposit">Deposit</a></h3>
 <pre><code class="language-solidity">event Deposit(address indexed player, uint256 amount);
 </code></pre>
@@ -1983,7 +1978,7 @@ player results, and determining winners. It extends IERC165 for interface detect
 <tr><td><code>feesPaid</code></td><td><code>bool</code></td><td>Whether the creator and protocol fees have been distributed</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="questionmanager"><a class="header" href="#questionmanager">QuestionManager</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/2890b2aea53065be300aa48413a18ae91f097053/src/QuestionManager.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/QuestionManager.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/QuestionManager.sol//src/DepositManager.sol/abstract.DepositManager.html">DepositManager</a></p>
 <p>Manages commit and reveal of questions for a session</p>
@@ -2062,7 +2057,7 @@ player results, and determining winners. It extends IERC165 for interface detect
 <tr><td><code>promptStrategy</code></td><td><code>address</code></td><td>Address of the contract implementing the prompt strategy logic</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="registry-3"><a class="header" href="#registry-3">Registry</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/2890b2aea53065be300aa48413a18ae91f097053/src/Registry.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/Registry.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 AccessControl</p>
 <p>Registry contract for managing the protocol's components which are allowed to be used in a new session</p>
@@ -2204,7 +2199,7 @@ AccessControl</p>
 <pre><code class="language-solidity">error CantReferSelf(address player);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="constants"><a class="header" href="#constants">Constants</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/2890b2aea53065be300aa48413a18ae91f097053/src/Roles.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/Roles.sol">Git Source</a></p>
 <h3 id="protocol_admin_role"><a class="header" href="#protocol_admin_role">PROTOCOL_ADMIN_ROLE</a></h3>
 <p><em>Role for setting global variables, mostly related to session rules.</em></p>
 <pre><code class="language-solidity">bytes32 constant PROTOCOL_ADMIN_ROLE = keccak256("PROTOCOL_ADMIN_ROLE");
@@ -2218,7 +2213,7 @@ AccessControl</p>
 <pre><code class="language-solidity">bytes32 constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="sessionmanager-4"><a class="header" href="#sessionmanager-4">SessionManager</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/2890b2aea53065be300aa48413a18ae91f097053/src/SessionManager.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/SessionManager.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/SessionManager.sol//src/QuestionManager.sol/abstract.QuestionManager.html">QuestionManager</a></p>
 <p>Core contract managing the lifecycle of sessions</p>
@@ -2281,7 +2276,7 @@ AccessControl</p>
 </code></pre>
 <h3 id="liveness"><a class="header" href="#liveness">liveness</a></h3>
 <p>Mapping of participant addresses to their last liveness check</p>
-<pre><code class="language-solidity">mapping(address =&gt; uint256 timestamp) liveness;
+<pre><code class="language-solidity">mapping(address =&gt; uint256 timestamp) public liveness;
 </code></pre>
 <h2 id="functions-13"><a class="header" href="#functions-13">Functions</a></h2>
 <h3 id="constructor-10"><a class="header" href="#constructor-10">constructor</a></h3>
@@ -2800,6 +2795,9 @@ AccessControl</p>
 <h3 id="livenessdurationset"><a class="header" href="#livenessdurationset">LivenessDurationSet</a></h3>
 <pre><code class="language-solidity">event LivenessDurationSet(uint256 livenessDuration);
 </code></pre>
+<h3 id="livenessset"><a class="header" href="#livenessset">LivenessSet</a></h3>
+<pre><code class="language-solidity">event LivenessSet(address indexed player);
+</code></pre>
 <h3 id="creationsunsettedset"><a class="header" href="#creationsunsettedset">CreationSunsettedSet</a></h3>
 <pre><code class="language-solidity">event CreationSunsettedSet(bool creationSunsetted);
 </code></pre>
@@ -2918,7 +2916,7 @@ AccessControl</p>
 <tr><td><code>verificationRequired</code></td><td><code>bool</code></td><td>Whether participants need to be verified before joining</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="sessionstate"><a class="header" href="#sessionstate">SessionState</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/2890b2aea53065be300aa48413a18ae91f097053/src/SessionManagerBase.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/SessionManagerBase.sol">Git Source</a></p>
 <p>Represents the possible states of a session throughout its lifecycle</p>
 <pre><code class="language-solidity">enum SessionState {
     None,
@@ -2930,7 +2928,7 @@ AccessControl</p>
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="sessionmanagerbase"><a class="header" href="#sessionmanagerbase">SessionManagerBase</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/2890b2aea53065be300aa48413a18ae91f097053/src/SessionManagerBase.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/SessionManagerBase.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 AccessControl</p>
 <h2 id="state-variables-11"><a class="header" href="#state-variables-11">State Variables</a></h2>

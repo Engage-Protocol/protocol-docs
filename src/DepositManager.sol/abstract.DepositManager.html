@@ -162,7 +162,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="depositmanager"><a class="header" href="#depositmanager">DepositManager</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/2890b2aea53065be300aa48413a18ae91f097053/src/DepositManager.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/DepositManager.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="/src/SessionManagerBase.sol/abstract.SessionManagerBase.html">SessionManagerBase</a></p>
 <p>Manages deposits, fees, and rewards for sessions</p>
@@ -271,6 +271,16 @@
 </tbody></table>
 </div>
 <h2 id="events"><a class="header" href="#events">Events</a></h2>
+<h3 id="feesdistributed"><a class="header" href="#feesdistributed">FeesDistributed</a></h3>
+<pre><code class="language-solidity">event FeesDistributed(
+    uint256 indexed gameId,
+    address token,
+    address indexed creator,
+    uint256 creatorFee,
+    address protocolTreasury,
+    uint256 protocolFee
+);
+</code></pre>
 <h3 id="deposit"><a class="header" href="#deposit">Deposit</a></h3>
 <pre><code class="language-solidity">event Deposit(address indexed player, uint256 amount);
 </code></pre>

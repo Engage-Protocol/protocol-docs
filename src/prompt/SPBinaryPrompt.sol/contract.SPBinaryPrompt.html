@@ -162,10 +162,11 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="spbinaryprompt"><a class="header" href="#spbinaryprompt">SPBinaryPrompt</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/2890b2aea53065be300aa48413a18ae91f097053/src/prompt/SPBinaryPrompt.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/prompt/SPBinaryPrompt.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 Ownable, <a href="/src/prompt/IPromptStrategy.sol/interface.IPromptStrategy.html">IPromptStrategy</a>, ERC165</p>
-<p>Contract for managing binary choice questions with probability predictions</p>
+<p>Contract for managing binary choice questions based on the Surprisingly Popular
+method https://www.nature.com/articles/nature21054</p>
 <p><em>This contract implements the IPromptStrategy interface for handling binary choice
 questions where players must predict both their answer choice and the probability
 of that answer being correct. The scoring system rewards players based on how
@@ -288,14 +289,15 @@ until the reveal phase begins.</em></p>
 </tbody></table>
 </div>
 <h3 id="recordresult"><a class="header" href="#recordresult">recordResult</a></h3>
-<p>Records the result for a player after verification</p>
-<p><em>This function calculates and stores the XP and time result for a player
-after their placement has been verified.</em></p>
-<pre><code class="language-solidity">function recordResult(VerificationInfo calldata info) external;
+<p>Records the result for a player</p>
+<pre><code class="language-solidity">function recordResult(uint256 questionId, address player, uint256 xp, uint256 time) external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>info</code></td><td><code>VerificationInfo</code></td><td>The verification information containing player and placement data</td></tr>
+<tr><td><code>questionId</code></td><td><code>uint256</code></td><td>The ID of the question</td></tr>
+<tr><td><code>player</code></td><td><code>address</code></td><td>The address of the player</td></tr>
+<tr><td><code>xp</code></td><td><code>uint256</code></td><td>The XP value for the player</td></tr>
+<tr><td><code>time</code></td><td><code>uint256</code></td><td>The time value for the player</td></tr>
 </tbody></table>
 </div>
 <h3 id="getreactiontime"><a class="header" href="#getreactiontime">getReactionTime</a></h3>
@@ -334,7 +336,7 @@ after their placement has been verified.</em></p>
 <p>Gets the result for a specific player on a specific question</p>
 <p><em>XP is calculated as: for a correct answer 1/2 of xpTiers[0] + 1/2 of xpTiers[0] * score (score is between 0 and 10000) / 10000, which means 100xp max.
 incorrect answer xpTiers[1] XP is rewarded.</em></p>
-<pre><code class="language-solidity">function getResult(uint256 gameId, uint256 questionId, address user) external view returns (Result memory);
+<pre><code class="language-solidity">function getResult(uint256 gameId, uint256 questionId, address user) public view returns (Result memory);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -384,12 +386,12 @@ incorrect answer xpTiers[1] XP is rewarded.</em></p>
 <h2 id="events"><a class="header" href="#events">Events</a></h2>
 <h3 id="answerrevealed"><a class="header" href="#answerrevealed">AnswerRevealed</a></h3>
 <pre><code class="language-solidity">event AnswerRevealed(
-    uint256 indexed gameId, uint256 indexed questionId, address indexed player, bool answer, int16 probability
+    uint256 indexed gameId, uint256 indexed questionId, address indexed player, bool answer, uint16 probability
 );
 </code></pre>
 <h2 id="errors"><a class="header" href="#errors">Errors</a></h2>
 <h3 id="revealmismatch"><a class="header" href="#revealmismatch">RevealMismatch</a></h3>
-<pre><code class="language-solidity">error RevealMismatch(uint256 gameId, uint256 questionId, bool answer, int16 probability, uint256 salt, bytes32 commit);
+<pre><code class="language-solidity">error RevealMismatch(uint256 gameId, uint256 questionId, bool answer, uint16 probability, uint256 salt, bytes32 commit);
 </code></pre>
 <h3 id="nochoices"><a class="header" href="#nochoices">NoChoices</a></h3>
 <pre><code class="language-solidity">error NoChoices(uint256 questionId);
@@ -444,50 +446,34 @@ incorrect answer xpTiers[1] XP is rewarded.</em></p>
 <pre><code class="language-solidity">struct Reaction {
     BaseReaction baseReaction;
     bool answer;
-    int16 probability;
+    uint16 probability;
 }
 </code></pre>
 <p><strong>Properties</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
 <tr><td><code>baseReaction</code></td><td><code>BaseReaction</code></td><td>Base reaction data (commit, timestamp, etc.)</td></tr>
 <tr><td><code>answer</code></td><td><code>bool</code></td><td>The binary answer choice selected by the player</td></tr>
-<tr><td><code>probability</code></td><td><code>int16</code></td><td>The player's probability prediction (0-10000 scale)</td></tr>
-</tbody></table>
-</div>
-<h3 id="verificationinfo"><a class="header" href="#verificationinfo">VerificationInfo</a></h3>
-<p>Structure for verifying player placement in the results</p>
-<p><em>Used during result calculation to verify the player's position in the ranking</em></p>
-<pre><code class="language-solidity">struct VerificationInfo {
-    uint256 questionId;
-    address player;
-    uint256 pickPosition;
-}
-</code></pre>
-<p><strong>Properties</strong></p>
-<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>questionId</code></td><td><code>uint256</code></td><td>ID of the question</td></tr>
-<tr><td><code>player</code></td><td><code>address</code></td><td>Address of the player</td></tr>
-<tr><td><code>pickPosition</code></td><td><code>uint256</code></td><td>Position of the player's choice in the final ranking</td></tr>
+<tr><td><code>probability</code></td><td><code>uint16</code></td><td>The player's probability prediction (0-10000 scale)</td></tr>
 </tbody></table>
 </div>
 <h3 id="resultaggregate"><a class="header" href="#resultaggregate">ResultAggregate</a></h3>
 <p>Structure for aggregating results across all players</p>
 <p><em>Contains running totals and averages for answer choices and probability predictions</em></p>
 <pre><code class="language-solidity">struct ResultAggregate {
-    int256 answerTotal;
-    int256 probabilityTotal;
-    int256 respondents;
-    int256 answerAverage;
-    int256 probabilityAverage;
+    uint256 answerTotal;
+    uint256 probabilityTotal;
+    uint256 respondents;
+    uint256 answerAverage;
+    uint256 probabilityAverage;
 }
 </code></pre>
 <p><strong>Properties</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>answerTotal</code></td><td><code>int256</code></td><td>Total of all answer choices (weighted by PRECISION)</td></tr>
-<tr><td><code>probabilityTotal</code></td><td><code>int256</code></td><td>Total of all probability predictions</td></tr>
-<tr><td><code>respondents</code></td><td><code>int256</code></td><td>Number of players who have revealed their answers</td></tr>
-<tr><td><code>answerAverage</code></td><td><code>int256</code></td><td>Average answer choice across all players</td></tr>
-<tr><td><code>probabilityAverage</code></td><td><code>int256</code></td><td>Average probability prediction across all players</td></tr>
+<tr><td><code>answerTotal</code></td><td><code>uint256</code></td><td>Total of all answer choices (weighted by PRECISION)</td></tr>
+<tr><td><code>probabilityTotal</code></td><td><code>uint256</code></td><td>Total of all probability predictions</td></tr>
+<tr><td><code>respondents</code></td><td><code>uint256</code></td><td>Number of players who have revealed their answers</td></tr>
+<tr><td><code>answerAverage</code></td><td><code>uint256</code></td><td>Average answer choice across all players</td></tr>
+<tr><td><code>probabilityAverage</code></td><td><code>uint256</code></td><td>Average probability prediction across all players</td></tr>
 </tbody></table>
 </div>
                     </main>
