@@ -162,9 +162,9 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="sessionmanager"><a class="header" href="#sessionmanager">SessionManager</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/SessionManager.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/5fe807cf0a52648eb62fc6cc5cfee20341dc4b8e/src/SessionManager.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
-<a href="/src/QuestionManager.sol/abstract.QuestionManager.html">QuestionManager</a></p>
+<a href="/src/QuestionManager.sol/abstract.QuestionManager.html">QuestionManager</a>, <a href="/src/session/ISessionManager.sol/interface.ISessionManager.html">ISessionManager</a></p>
 <p>Core contract managing the lifecycle of sessions</p>
 <p><em>Handles session creation, state management, and participant interactions</em></p>
 <p><em>Uses the QuestionManager for question handling and DepositManager for financial operations</em></p>
@@ -173,11 +173,11 @@
 <h2 id="state-variables"><a class="header" href="#state-variables">State Variables</a></h2>
 <h3 id="minimumrescheduletime"><a class="header" href="#minimumrescheduletime">minimumRescheduleTime</a></h3>
 <p>Minimum time required between original start time and rescheduled start time</p>
-<pre><code class="language-solidity">uint256 public constant minimumRescheduleTime = 15 minutes;
+<pre><code class="language-solidity">uint32 public constant minimumRescheduleTime = 15 minutes;
 </code></pre>
-<h3 id="nextgameid"><a class="header" href="#nextgameid">nextGameId</a></h3>
+<h3 id="nextsessionid"><a class="header" href="#nextsessionid">nextSessionId</a></h3>
 <p>Next available game ID, incremented after each game creation, starting from 1</p>
-<pre><code class="language-solidity">uint256 public nextGameId = 1;
+<pre><code class="language-solidity">uint256 public nextSessionId = 1;
 </code></pre>
 <h3 id="minimumstartdelay"><a class="header" href="#minimumstartdelay">minimumStartDelay</a></h3>
 <p>Minimum delay required between game creation and start time</p>
@@ -205,73 +205,55 @@
 </code></pre>
 <h3 id="livenessrequired"><a class="header" href="#livenessrequired">livenessRequired</a></h3>
 <p>Whether liveness check is required for participants to join games. This is only planned to be used if we see heavy botting</p>
-<pre><code class="language-solidity">bool public livenessRequired = false;
+<pre><code class="language-solidity">bool public livenessRequired;
 </code></pre>
 <h3 id="creationsunsetted"><a class="header" href="#creationsunsetted">creationSunsetted</a></h3>
 <p>Whether session creation is disabled</p>
-<pre><code class="language-solidity">bool public creationSunsetted = false;
-</code></pre>
-<h3 id="games"><a class="header" href="#games">games</a></h3>
-<p>Mapping of game ID to game details</p>
-<pre><code class="language-solidity">mapping(uint256 =&gt; Game) public games;
+<pre><code class="language-solidity">bool public creationSunsetted;
 </code></pre>
 <h3 id="contestants"><a class="header" href="#contestants">contestants</a></h3>
-<p>Mapping of game ID and participant address to their participation status</p>
-<pre><code class="language-solidity">mapping(uint256 gameId =&gt; mapping(address player =&gt; bool joined)) public contestants;
+<p>Mapping of session ID and participant address to their participation status</p>
+<pre><code class="language-solidity">mapping(uint256 sessionId =&gt; mapping(address player =&gt; bool joined)) public contestants;
 </code></pre>
 <h3 id="isverificationapproved"><a class="header" href="#isverificationapproved">isVerificationApproved</a></h3>
 <p>Mapping of participant addresses to their verification status</p>
-<pre><code class="language-solidity">mapping(address =&gt; bool) public isVerificationApproved;
+<pre><code class="language-solidity">mapping(address player =&gt; bool isVerified) public isVerificationApproved;
 </code></pre>
 <h3 id="liveness"><a class="header" href="#liveness">liveness</a></h3>
 <p>Mapping of participant addresses to their last liveness check</p>
-<pre><code class="language-solidity">mapping(address =&gt; uint256 timestamp) public liveness;
+<pre><code class="language-solidity">mapping(address player =&gt; uint256 timestamp) public liveness;
 </code></pre>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="constructor"><a class="header" href="#constructor">constructor</a></h3>
 <pre><code class="language-solidity">constructor(address _registry) QuestionManager(_registry);
 </code></pre>
-<h3 id="onlycreator"><a class="header" href="#onlycreator">onlyCreator</a></h3>
-<p>Ensures that only the creator of a game can call the function</p>
-<pre><code class="language-solidity">modifier onlyCreator(uint256 _gameId);
+<h3 id="onlyjoined"><a class="header" href="#onlyjoined">onlyJoined</a></h3>
+<pre><code class="language-solidity">modifier onlyJoined(uint256 _sessionId);
 </code></pre>
-<p><strong>Parameters</strong></p>
-<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the game to check creator permissions for</td></tr>
-</tbody></table>
-</div>
-<h3 id="onlystate"><a class="header" href="#onlystate">onlyState</a></h3>
-<p>Ensures that the session is in the expected state</p>
-<pre><code class="language-solidity">modifier onlyState(uint256 _gameId, SessionState _state);
-</code></pre>
-<p><strong>Parameters</strong></p>
-<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the session to check state for</td></tr>
-<tr><td><code>_state</code></td><td><code>SessionState</code></td><td>The expected state of the session</td></tr>
-</tbody></table>
-</div>
 <h3 id="creategame"><a class="header" href="#creategame">createGame</a></h3>
 <p>Creates a new session with the specified parameters</p>
 <pre><code class="language-solidity">function createGame(
-    uint256 _startTime,
-    uint256 _endTime,
+    uint32 _startTime,
+    uint32 _endTime,
     uint256 _ticketPrice,
-    uint256 _creatorFee,
+    uint128 _creatorFee,
     address _token,
+    address _creatorFeeReceiver,
     bytes32[] memory _promptHashes,
     address[] memory _promptStrategies,
     address _sessionStrategy,
     address _rewardStrategy,
     bool _verificationRequired
-) external returns (uint256 gameId);
+) external returns (uint256 sessionId);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_startTime</code></td><td><code>uint256</code></td><td>Timestamp when the session should start</td></tr>
-<tr><td><code>_endTime</code></td><td><code>uint256</code></td><td>Timestamp when the session should end</td></tr>
+<tr><td><code>_startTime</code></td><td><code>uint32</code></td><td>Timestamp when the session should start</td></tr>
+<tr><td><code>_endTime</code></td><td><code>uint32</code></td><td>Timestamp when the session should end</td></tr>
 <tr><td><code>_ticketPrice</code></td><td><code>uint256</code></td><td>Price for each contestant to join the session</td></tr>
-<tr><td><code>_creatorFee</code></td><td><code>uint256</code></td><td>Percentage of fees that go to the creator</td></tr>
+<tr><td><code>_creatorFee</code></td><td><code>uint128</code></td><td>Percentage of fees that go to the creator</td></tr>
 <tr><td><code>_token</code></td><td><code>address</code></td><td>Address of the token used for payments</td></tr>
+<tr><td><code>_creatorFeeReceiver</code></td><td><code>address</code></td><td>Address of the receiver of the creator fee</td></tr>
 <tr><td><code>_promptHashes</code></td><td><code>bytes32[]</code></td><td>Array of hashed prompts for the session</td></tr>
 <tr><td><code>_promptStrategies</code></td><td><code>address[]</code></td><td>Array of prompt strategy contracts for each prompt</td></tr>
 <tr><td><code>_sessionStrategy</code></td><td><code>address</code></td><td>Address of the session strategy to use</td></tr>
@@ -281,7 +263,7 @@
 </div>
 <p><strong>Returns</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>gameId</code></td><td><code>uint256</code></td><td>The ID of the newly created session</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the newly created session</td></tr>
 </tbody></table>
 </div>
 <h3 id="joingame"><a class="header" href="#joingame">joinGame</a></h3>
@@ -289,11 +271,11 @@
 <p><em>Requires payment of the session's ticket price</em></p>
 <p><em>Requires verification if the session has verification enabled</em></p>
 <p><em>Requires liveness check if liveness is required</em></p>
-<pre><code class="language-solidity">function joinGame(uint256 _gameId) external;
+<pre><code class="language-solidity">function joinGame(uint256 sessionId) external onlyState(sessionId, SessionState.Created);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the session to join</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session to join</td></tr>
 </tbody></table>
 </div>
 <h3 id="leaverescheduledgame"><a class="header" href="#leaverescheduledgame">leaveRescheduledGame</a></h3>
@@ -301,37 +283,42 @@
 <p><em>Only works for sessions in Created state</em></p>
 <p><em>Only works for rescheduled sessions</em></p>
 <p><em>Must be called before the minimum reschedule time has passed</em></p>
-<pre><code class="language-solidity">function leaveRescheduledGame(uint256 _gameId) external onlyState(_gameId, SessionState.Created);
+<pre><code class="language-solidity">function leaveRescheduledGame(uint256 sessionId)
+    external
+    onlyState(sessionId, SessionState.Created)
+    onlyJoined(sessionId);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the rescheduled session to leave</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the rescheduled session to leave</td></tr>
 </tbody></table>
 </div>
 <h3 id="commitreaction"><a class="header" href="#commitreaction">commitReaction</a></h3>
 <p>Commits a participant's reaction to a question in an ongoing session</p>
 <p><em>Only works for sessions in Ongoing state</em></p>
 <p><em>Participant must be a contestant in the session</em></p>
-<pre><code class="language-solidity">function commitReaction(uint256 _gameId, uint256 _questionId, bytes32 _commit)
+<pre><code class="language-solidity">function commitReaction(uint256 sessionId, uint256 questionId, bytes32 commit)
     external
-    onlyState(_gameId, SessionState.Ongoing);
+    onlyState(sessionId, SessionState.Ongoing)
+    onlyJoined(sessionId);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
-<tr><td><code>_questionId</code></td><td><code>uint256</code></td><td>The ID of the question to react to</td></tr>
-<tr><td><code>_commit</code></td><td><code>bytes32</code></td><td>The hashed commitment of the participant's reaction</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
+<tr><td><code>questionId</code></td><td><code>uint256</code></td><td>The ID of the question to react to</td></tr>
+<tr><td><code>commit</code></td><td><code>bytes32</code></td><td>The hashed commitment of the participant's reaction</td></tr>
 </tbody></table>
 </div>
 <h3 id="revealreactions"><a class="header" href="#revealreactions">revealReactions</a></h3>
 <p>Reveals a participant's reactions to multiple questions in a session</p>
-<pre><code class="language-solidity">function revealReactions(uint256 _gameId, uint256[] calldata questionIds, bytes[] calldata answers, uint256 salt)
+<pre><code class="language-solidity">function revealReactions(uint256 sessionId, uint256[] calldata questionIds, bytes[] calldata answers, uint256 salt)
     external
-    onlyState(_gameId, SessionState.Ongoing);
+    onlyState(sessionId, SessionState.Ongoing)
+    onlyJoined(sessionId);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
 <tr><td><code>questionIds</code></td><td><code>uint256[]</code></td><td>Array of question IDs to reveal answers for</td></tr>
 <tr><td><code>answers</code></td><td><code>bytes[]</code></td><td>Array of answers corresponding to each question</td></tr>
 <tr><td><code>salt</code></td><td><code>uint256</code></td><td>The salt used in the commitment</td></tr>
@@ -339,128 +326,149 @@
 </div>
 <h3 id="refundcancelledgame"><a class="header" href="#refundcancelledgame">refundCancelledGame</a></h3>
 <p>Refunds the entry fee to a participant for a cancelled session</p>
-<pre><code class="language-solidity">function refundCancelledGame(uint256 _gameId) external onlyState(_gameId, SessionState.Cancelled);
+<pre><code class="language-solidity">function refundCancelledGame(uint256 sessionId)
+    external
+    onlyState(sessionId, SessionState.Cancelled)
+    onlyJoined(sessionId);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the cancelled session</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the cancelled session</td></tr>
 </tbody></table>
 </div>
 <h3 id="refundsponsorfunds"><a class="header" href="#refundsponsorfunds">refundSponsorFunds</a></h3>
 <p>Refunds sponsor funds for a cancelled session</p>
-<pre><code class="language-solidity">function refundSponsorFunds(uint256 _gameId) external onlyState(_gameId, SessionState.Cancelled);
+<pre><code class="language-solidity">function refundSponsorFunds(uint256 sessionId) external onlyState(sessionId, SessionState.Cancelled);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the cancelled session</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the cancelled session</td></tr>
 </tbody></table>
 </div>
 <h3 id="startandrevealgamequestion"><a class="header" href="#startandrevealgamequestion">startAndRevealGameQuestion</a></h3>
 <p>Starts a session and reveals the first question</p>
-<pre><code class="language-solidity">function startAndRevealGameQuestion(uint256 _gameId, uint256 _questionId, bytes memory _question, uint256 _salt)
+<pre><code class="language-solidity">function startAndRevealGameQuestion(uint256 sessionId, uint256 questionId, bytes memory question, uint256 salt)
     external
-    onlyState(_gameId, SessionState.Created);
+    onlyState(sessionId, SessionState.Created);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
-<tr><td><code>_questionId</code></td><td><code>uint256</code></td><td>The ID of the question to reveal</td></tr>
-<tr><td><code>_question</code></td><td><code>bytes</code></td><td>The question data</td></tr>
-<tr><td><code>_salt</code></td><td><code>uint256</code></td><td>The salt used for the question commitment</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
+<tr><td><code>questionId</code></td><td><code>uint256</code></td><td>The ID of the question to reveal</td></tr>
+<tr><td><code>question</code></td><td><code>bytes</code></td><td>The question data</td></tr>
+<tr><td><code>salt</code></td><td><code>uint256</code></td><td>The salt used for the question commitment</td></tr>
 </tbody></table>
 </div>
 <h3 id="revealgamequestion"><a class="header" href="#revealgamequestion">revealGameQuestion</a></h3>
 <p>Reveals a question in an ongoing session</p>
-<pre><code class="language-solidity">function revealGameQuestion(uint256 _gameId, uint256 _questionId, bytes memory _question, uint256 _salt)
+<pre><code class="language-solidity">function revealGameQuestion(uint256 sessionId, uint256 questionId, bytes memory question, uint256 salt)
     external
-    onlyState(_gameId, SessionState.Ongoing);
+    onlyState(sessionId, SessionState.Ongoing);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
-<tr><td><code>_questionId</code></td><td><code>uint256</code></td><td>The ID of the question to reveal</td></tr>
-<tr><td><code>_question</code></td><td><code>bytes</code></td><td>The question data</td></tr>
-<tr><td><code>_salt</code></td><td><code>uint256</code></td><td>The salt used for the question commitment</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
+<tr><td><code>questionId</code></td><td><code>uint256</code></td><td>The ID of the question to reveal</td></tr>
+<tr><td><code>question</code></td><td><code>bytes</code></td><td>The question data</td></tr>
+<tr><td><code>salt</code></td><td><code>uint256</code></td><td>The salt used for the question commitment</td></tr>
 </tbody></table>
 </div>
 <h3 id="endgame"><a class="header" href="#endgame">endGame</a></h3>
 <p>Ends an ongoing session</p>
-<pre><code class="language-solidity">function endGame(uint256 _gameId) external onlyState(_gameId, SessionState.Ongoing);
+<pre><code class="language-solidity">function endGame(uint256 sessionId) external onlyState(sessionId, SessionState.Ongoing);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the session to end</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session to end</td></tr>
 </tbody></table>
 </div>
 <h3 id="cancelgame"><a class="header" href="#cancelgame">cancelGame</a></h3>
 <p>Cancels a session</p>
-<pre><code class="language-solidity">function cancelGame(uint256 _gameId) external onlyCreator(_gameId);
+<pre><code class="language-solidity">function cancelGame(uint256 sessionId) external onlyCreator(sessionId) onlyCancellableState(sessionId);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the session to cancel</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session to cancel</td></tr>
 </tbody></table>
 </div>
 <h3 id="cancelgameifcreatormissing"><a class="header" href="#cancelgameifcreatormissing">cancelGameIfCreatorMissing</a></h3>
-<pre><code class="language-solidity">function cancelGameIfCreatorMissing(uint256 _gameId) external;
-</code></pre>
-<h3 id="reschedulegame"><a class="header" href="#reschedulegame">rescheduleGame</a></h3>
-<p>Reschedules a session to a new start time</p>
-<pre><code class="language-solidity">function rescheduleGame(uint256 _gameId, uint256 _newStartTime)
-    external
-    onlyCreator(_gameId)
-    onlyState(_gameId, SessionState.Created);
+<p>Cancels a session if the creator is missing</p>
+<pre><code class="language-solidity">function cancelGameIfCreatorMissing(uint256 sessionId) external onlyCancellableState(sessionId);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the session to reschedule</td></tr>
-<tr><td><code>_newStartTime</code></td><td><code>uint256</code></td><td>The new start time for the session</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session to cancel</td></tr>
+</tbody></table>
+</div>
+<h3 id="reschedulegame"><a class="header" href="#reschedulegame">rescheduleGame</a></h3>
+<p>Reschedules a session to a new start time</p>
+<pre><code class="language-solidity">function rescheduleGame(uint256 sessionId, uint32 newStartTime)
+    external
+    onlyCreator(sessionId)
+    onlyState(sessionId, SessionState.Created);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session to reschedule</td></tr>
+<tr><td><code>newStartTime</code></td><td><code>uint32</code></td><td>The new start time for the session</td></tr>
 </tbody></table>
 </div>
 <h3 id="concludegame"><a class="header" href="#concludegame">concludeGame</a></h3>
 <p>Concludes a session and makes sure winners are determined, so rewards can be distributed</p>
-<pre><code class="language-solidity">function concludeGame(uint256 _gameId) external onlyCreator(_gameId) onlyState(_gameId, SessionState.Ended);
+<pre><code class="language-solidity">function concludeGame(uint256 sessionId) external onlyCreator(sessionId) onlyState(sessionId, SessionState.Ended);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the session to conclude</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session to conclude</td></tr>
+</tbody></table>
+</div>
+<h3 id="concludegameifcreatormissing"><a class="header" href="#concludegameifcreatormissing">concludeGameIfCreatorMissing</a></h3>
+<p>Concludes a session if the creator is missing</p>
+<pre><code class="language-solidity">function concludeGameIfCreatorMissing(uint256 sessionId) external onlyState(sessionId, SessionState.Ended);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session to conclude</td></tr>
 </tbody></table>
 </div>
 <h3 id="claimrewards"><a class="header" href="#claimrewards">claimRewards</a></h3>
 <p>Distributes rewards to winners of a concluded session</p>
-<pre><code class="language-solidity">function claimRewards(uint256 _gameId, uint256 position) external onlyState(_gameId, SessionState.Concluded);
+<pre><code class="language-solidity">function claimRewards(uint256 sessionId, uint256 position)
+    external
+    onlyState(sessionId, SessionState.Concluded)
+    onlyJoined(sessionId);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
 <tr><td><code>position</code></td><td><code>uint256</code></td><td></td></tr>
 </tbody></table>
 </div>
 <h3 id="distributefees"><a class="header" href="#distributefees">distributeFees</a></h3>
 <p>Distributes protocol and creator fees for a concluded session</p>
-<pre><code class="language-solidity">function distributeFees(uint256 _gameId) external onlyState(_gameId, SessionState.Concluded);
+<pre><code class="language-solidity">function distributeFees(uint256 sessionId) external onlyState(sessionId, SessionState.Concluded);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
 </tbody></table>
 </div>
 <h3 id="claimreferralrewards"><a class="header" href="#claimreferralrewards">claimReferralRewards</a></h3>
 <p>Claims referral rewards for the caller for multiple sessions</p>
-<pre><code class="language-solidity">function claimReferralRewards(uint256[] memory _gameIds) external;
+<pre><code class="language-solidity">function claimReferralRewards(uint256[] memory sessionIds) external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_gameIds</code></td><td><code>uint256[]</code></td><td>Array of session IDs to claim referral rewards for</td></tr>
+<tr><td><code>sessionIds</code></td><td><code>uint256[]</code></td><td>Array of session IDs to claim referral rewards for</td></tr>
 </tbody></table>
 </div>
 <h3 id="getgamestarttime"><a class="header" href="#getgamestarttime">getGameStartTime</a></h3>
 <p>Returns the scheduled start time of a session</p>
-<pre><code class="language-solidity">function getGameStartTime(uint256 gameId) external view returns (uint256);
+<pre><code class="language-solidity">function getGameStartTime(uint256 sessionId) external view returns (uint256);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>gameId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
 </tbody></table>
 </div>
 <p><strong>Returns</strong></p>
@@ -470,11 +478,11 @@
 </div>
 <h3 id="getgameendtime"><a class="header" href="#getgameendtime">getGameEndTime</a></h3>
 <p>Returns the scheduled end time of a session</p>
-<pre><code class="language-solidity">function getGameEndTime(uint256 gameId) external view returns (uint256);
+<pre><code class="language-solidity">function getGameEndTime(uint256 sessionId) external view returns (uint256);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>gameId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
 </tbody></table>
 </div>
 <p><strong>Returns</strong></p>
@@ -484,11 +492,11 @@
 </div>
 <h3 id="getcontestantscount"><a class="header" href="#getcontestantscount">getContestantsCount</a></h3>
 <p>Returns the number of contestants in a session</p>
-<pre><code class="language-solidity">function getContestantsCount(uint256 _gameId) external view returns (uint256);
+<pre><code class="language-solidity">function getContestantsCount(uint256 sessionId) external view returns (uint256);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
 </tbody></table>
 </div>
 <p><strong>Returns</strong></p>
@@ -498,11 +506,11 @@
 </div>
 <h3 id="approveverification"><a class="header" href="#approveverification">approveVerification</a></h3>
 <p>Sets the verification status of a participant for verification required sessions</p>
-<pre><code class="language-solidity">function approveVerification(address _player, bool verified) external onlyRole(ADMIN_ROLE);
+<pre><code class="language-solidity">function approveVerification(address player, bool verified) external onlyRole(ADMIN_ROLE);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_player</code></td><td><code>address</code></td><td>The address of the participant to approve</td></tr>
+<tr><td><code>player</code></td><td><code>address</code></td><td>The address of the participant to approve</td></tr>
 <tr><td><code>verified</code></td><td><code>bool</code></td><td>Whether the participant is verified</td></tr>
 </tbody></table>
 </div>
@@ -584,39 +592,39 @@
 </code></pre>
 <h3 id="getstarttime"><a class="header" href="#getstarttime">getStartTime</a></h3>
 <p>Returns the start time of a session</p>
-<pre><code class="language-solidity">function getStartTime(uint256 _gameId) external view returns (uint256);
+<pre><code class="language-solidity">function getStartTime(uint256 sessionId) external view returns (uint32);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
 </tbody></table>
 </div>
 <p><strong>Returns</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>&lt;none&gt;</code></td><td><code>uint256</code></td><td>The start time as a Unix timestamp</td></tr>
+<tr><td><code>&lt;none&gt;</code></td><td><code>uint32</code></td><td>The start time as a Unix timestamp</td></tr>
 </tbody></table>
 </div>
 <h3 id="getendtime"><a class="header" href="#getendtime">getEndTime</a></h3>
 <p>Returns the end time of a session</p>
-<pre><code class="language-solidity">function getEndTime(uint256 _gameId) external view returns (uint256);
+<pre><code class="language-solidity">function getEndTime(uint256 sessionId) external view returns (uint32);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
 </tbody></table>
 </div>
 <p><strong>Returns</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>&lt;none&gt;</code></td><td><code>uint256</code></td><td>The end time as a Unix timestamp</td></tr>
+<tr><td><code>&lt;none&gt;</code></td><td><code>uint32</code></td><td>The end time as a Unix timestamp</td></tr>
 </tbody></table>
 </div>
 <h3 id="getnumcontestants"><a class="header" href="#getnumcontestants">getNumContestants</a></h3>
 <p>Returns the number of contestants in a session</p>
-<pre><code class="language-solidity">function getNumContestants(uint256 _gameId) external view returns (uint256);
+<pre><code class="language-solidity">function getNumContestants(uint256 sessionId) external view returns (uint256);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
 </tbody></table>
 </div>
 <p><strong>Returns</strong></p>
@@ -626,11 +634,11 @@
 </div>
 <h3 id="getsessionstrategy"><a class="header" href="#getsessionstrategy">getSessionStrategy</a></h3>
 <p>Returns the session strategy address for a session</p>
-<pre><code class="language-solidity">function getSessionStrategy(uint256 _gameId) external view returns (address);
+<pre><code class="language-solidity">function getSessionStrategy(uint256 sessionId) external view returns (address);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
 </tbody></table>
 </div>
 <p><strong>Returns</strong></p>
@@ -640,11 +648,11 @@
 </div>
 <h3 id="getoriginalstarttime"><a class="header" href="#getoriginalstarttime">getOriginalStartTime</a></h3>
 <p>Returns the original start time of a session (before rescheduling)</p>
-<pre><code class="language-solidity">function getOriginalStartTime(uint256 _gameId) external view returns (uint256);
+<pre><code class="language-solidity">function getOriginalStartTime(uint256 sessionId) external view returns (uint256);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
 </tbody></table>
 </div>
 <p><strong>Returns</strong></p>
@@ -654,11 +662,11 @@
 </div>
 <h3 id="getsessionstate"><a class="header" href="#getsessionstate">getSessionState</a></h3>
 <p>Returns the current state of a session</p>
-<pre><code class="language-solidity">function getSessionState(uint256 _gameId) external view returns (SessionState);
+<pre><code class="language-solidity">function getSessionState(uint256 sessionId) external view returns (SessionState);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
 </tbody></table>
 </div>
 <p><strong>Returns</strong></p>
@@ -668,11 +676,11 @@
 </div>
 <h3 id="getcreator"><a class="header" href="#getcreator">getCreator</a></h3>
 <p>Returns the creator address of a session</p>
-<pre><code class="language-solidity">function getCreator(uint256 _gameId) external view returns (address);
+<pre><code class="language-solidity">function getCreator(uint256 sessionId) external view returns (address);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_gameId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
 </tbody></table>
 </div>
 <p><strong>Returns</strong></p>
@@ -680,10 +688,45 @@
 <tr><td><code>&lt;none&gt;</code></td><td><code>address</code></td><td>The address of the session creator</td></tr>
 </tbody></table>
 </div>
+<h3 id="getcreatorfeereceiver"><a class="header" href="#getcreatorfeereceiver">getCreatorFeeReceiver</a></h3>
+<p>Returns the creator fee receiver of a session</p>
+<pre><code class="language-solidity">function getCreatorFeeReceiver(uint256 sessionId) external view returns (address);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>address</code></td><td>The address of the creator fee receiver</td></tr>
+</tbody></table>
+</div>
+<h3 id="getnextsessionid"><a class="header" href="#getnextsessionid">getNextSessionId</a></h3>
+<p>Returns the next session ID</p>
+<pre><code class="language-solidity">function getNextSessionId() external view returns (uint256);
+</code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>uint256</code></td><td>The next session ID</td></tr>
+</tbody></table>
+</div>
+<h3 id="getnextquestionid"><a class="header" href="#getnextquestionid">getNextQuestionId</a></h3>
+<p>Returns the next question ID</p>
+<pre><code class="language-solidity">function getNextQuestionId() external view returns (uint256);
+</code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>uint256</code></td><td>The next question ID</td></tr>
+</tbody></table>
+</div>
+<h3 id="supportsinterface"><a class="header" href="#supportsinterface">supportsInterface</a></h3>
+<pre><code class="language-solidity">function supportsInterface(bytes4 interfaceId) public view override(AccessControl, IERC165) returns (bool);
+</code></pre>
 <h2 id="events"><a class="header" href="#events">Events</a></h2>
 <h3 id="gamecreated"><a class="header" href="#gamecreated">GameCreated</a></h3>
 <pre><code class="language-solidity">event GameCreated(
-    uint256 indexed gameId,
+    uint256 indexed sessionId,
     uint256 startTime,
     uint256 endTime,
     address entryToken,
@@ -697,28 +740,28 @@
 );
 </code></pre>
 <h3 id="gameconcluded"><a class="header" href="#gameconcluded">GameConcluded</a></h3>
-<pre><code class="language-solidity">event GameConcluded(uint256 indexed gameId, bool resultsPublished, bool resultsFinalized);
+<pre><code class="language-solidity">event GameConcluded(uint256 indexed sessionId, bool resultsPublished, bool resultsFinalized);
 </code></pre>
 <h3 id="refundrequested"><a class="header" href="#refundrequested">RefundRequested</a></h3>
-<pre><code class="language-solidity">event RefundRequested(uint256 indexed gameId, address indexed contestant);
+<pre><code class="language-solidity">event RefundRequested(uint256 indexed sessionId, address indexed contestant);
 </code></pre>
 <h3 id="contestantjoined"><a class="header" href="#contestantjoined">ContestantJoined</a></h3>
-<pre><code class="language-solidity">event ContestantJoined(uint256 indexed gameId, address indexed contestant);
+<pre><code class="language-solidity">event ContestantJoined(uint256 indexed sessionId, address indexed contestant);
 </code></pre>
 <h3 id="gamestarted"><a class="header" href="#gamestarted">GameStarted</a></h3>
-<pre><code class="language-solidity">event GameStarted(uint256 indexed gameId);
+<pre><code class="language-solidity">event GameStarted(uint256 indexed sessionId);
 </code></pre>
 <h3 id="gameended"><a class="header" href="#gameended">GameEnded</a></h3>
-<pre><code class="language-solidity">event GameEnded(uint256 indexed gameId);
+<pre><code class="language-solidity">event GameEnded(uint256 indexed sessionId);
 </code></pre>
 <h3 id="gamecancelled"><a class="header" href="#gamecancelled">GameCancelled</a></h3>
-<pre><code class="language-solidity">event GameCancelled(uint256 indexed gameId);
+<pre><code class="language-solidity">event GameCancelled(uint256 indexed sessionId);
 </code></pre>
 <h3 id="gamerescheduled"><a class="header" href="#gamerescheduled">GameRescheduled</a></h3>
-<pre><code class="language-solidity">event GameRescheduled(uint256 indexed gameId, uint256 newStartTime);
+<pre><code class="language-solidity">event GameRescheduled(uint256 indexed sessionId, uint256 newStartTime);
 </code></pre>
 <h3 id="rewardwithdrawn"><a class="header" href="#rewardwithdrawn">RewardWithdrawn</a></h3>
-<pre><code class="language-solidity">event RewardWithdrawn(uint256 indexed gameId, address indexed claimer, uint256 amount);
+<pre><code class="language-solidity">event RewardWithdrawn(uint256 indexed sessionId, address indexed claimer, uint256 amount);
 </code></pre>
 <h3 id="revealgraceperiodset"><a class="header" href="#revealgraceperiodset">RevealGracePeriodSet</a></h3>
 <pre><code class="language-solidity">event RevealGracePeriodSet(uint256 gracePeriod);
@@ -760,9 +803,6 @@
 <h3 id="notenoughcontestants"><a class="header" href="#notenoughcontestants">NotEnoughContestants</a></h3>
 <pre><code class="language-solidity">error NotEnoughContestants(uint256 numContestants, uint256 minContestants);
 </code></pre>
-<h3 id="invalidgamestate"><a class="header" href="#invalidgamestate">InvalidGameState</a></h3>
-<pre><code class="language-solidity">error InvalidGameState(SessionState expected, SessionState actual);
-</code></pre>
 <h3 id="toomanycontestants"><a class="header" href="#toomanycontestants">TooManyContestants</a></h3>
 <pre><code class="language-solidity">error TooManyContestants(uint256 maxContestants, uint256 numContestants);
 </code></pre>
@@ -773,7 +813,7 @@
 <pre><code class="language-solidity">error GameIsNotEnded(uint256 endTime, uint256 currentTime);
 </code></pre>
 <h3 id="nocontestantsingame"><a class="header" href="#nocontestantsingame">NoContestantsInGame</a></h3>
-<pre><code class="language-solidity">error NoContestantsInGame(uint256 gameId);
+<pre><code class="language-solidity">error NoContestantsInGame(uint256 sessionId);
 </code></pre>
 <h3 id="gamelogicnotregistered"><a class="header" href="#gamelogicnotregistered">GameLogicNotRegistered</a></h3>
 <pre><code class="language-solidity">error GameLogicNotRegistered(address gameLogic);
@@ -785,22 +825,19 @@
 <pre><code class="language-solidity">error GameLateToReveal(uint256 startTime, uint256 gracePeriod, uint256 currentTime);
 </code></pre>
 <h3 id="gameisnotrescheduled"><a class="header" href="#gameisnotrescheduled">GameIsNotRescheduled</a></h3>
-<pre><code class="language-solidity">error GameIsNotRescheduled(uint256 gameId);
+<pre><code class="language-solidity">error GameIsNotRescheduled(uint256 sessionId);
 </code></pre>
 <h3 id="gameisalreadyrescheduled"><a class="header" href="#gameisalreadyrescheduled">GameIsAlreadyRescheduled</a></h3>
-<pre><code class="language-solidity">error GameIsAlreadyRescheduled(uint256 gameId);
+<pre><code class="language-solidity">error GameIsAlreadyRescheduled(uint256 sessionId);
 </code></pre>
 <h3 id="notjoined"><a class="header" href="#notjoined">NotJoined</a></h3>
-<pre><code class="language-solidity">error NotJoined(address player, uint256 gameId);
+<pre><code class="language-solidity">error NotJoined(address player, uint256 sessionId);
 </code></pre>
 <h3 id="toolatetoleave"><a class="header" href="#toolatetoleave">TooLateToLeave</a></h3>
-<pre><code class="language-solidity">error TooLateToLeave(uint256 gameId);
+<pre><code class="language-solidity">error TooLateToLeave(uint256 sessionId);
 </code></pre>
 <h3 id="rescheduletoosoon"><a class="header" href="#rescheduletoosoon">RescheduleTooSoon</a></h3>
 <pre><code class="language-solidity">error RescheduleTooSoon(uint256 originalStartTime, uint256 minimumRescheduleTime, uint256 newStartTime);
-</code></pre>
-<h3 id="onlycreator-1"><a class="header" href="#onlycreator-1">OnlyCreator</a></h3>
-<pre><code class="language-solidity">error OnlyCreator(uint256 gameId, address creator, address caller);
 </code></pre>
 <h3 id="notverified"><a class="header" href="#notverified">NotVerified</a></h3>
 <pre><code class="language-solidity">error NotVerified(address player);
@@ -812,7 +849,7 @@
 <pre><code class="language-solidity">error PromptStrategyNotRegistered(address promptStrategy);
 </code></pre>
 <h3 id="nowinnersyet"><a class="header" href="#nowinnersyet">NoWinnersYet</a></h3>
-<pre><code class="language-solidity">error NoWinnersYet(uint256 gameId);
+<pre><code class="language-solidity">error NoWinnersYet(uint256 sessionId);
 </code></pre>
 <h3 id="notlively"><a class="header" href="#notlively">NotLively</a></h3>
 <pre><code class="language-solidity">error NotLively(address player);
@@ -821,10 +858,10 @@
 <pre><code class="language-solidity">error CreationDisabled();
 </code></pre>
 <h3 id="questionnotrevealed"><a class="header" href="#questionnotrevealed">QuestionNotRevealed</a></h3>
-<pre><code class="language-solidity">error QuestionNotRevealed(uint256 gameId, uint256 questionId);
+<pre><code class="language-solidity">error QuestionNotRevealed(uint256 sessionId, uint256 questionId);
 </code></pre>
 <h3 id="gamewaitingforconclusion"><a class="header" href="#gamewaitingforconclusion">GameWaitingForConclusion</a></h3>
-<pre><code class="language-solidity">error GameWaitingForConclusion(uint256 gameId);
+<pre><code class="language-solidity">error GameWaitingForConclusion(uint256 sessionId);
 </code></pre>
 <h3 id="paymenttokennotregistered"><a class="header" href="#paymenttokennotregistered">PaymentTokenNotRegistered</a></h3>
 <pre><code class="language-solidity">error PaymentTokenNotRegistered(address paymentToken);
@@ -835,36 +872,34 @@
 <h3 id="sessionmanagermismatch"><a class="header" href="#sessionmanagermismatch">SessionManagerMismatch</a></h3>
 <pre><code class="language-solidity">error SessionManagerMismatch(address sessionManager);
 </code></pre>
-<h2 id="structs"><a class="header" href="#structs">Structs</a></h2>
-<h3 id="game"><a class="header" href="#game">Game</a></h3>
-<p>Represents a game session with its configuration and state</p>
-<pre><code class="language-solidity">struct Game {
-    uint256 gameId;
-    uint256 startTime;
-    uint256 endTime;
-    uint256 numContestants;
-    address sessionStrategy;
-    address rewardStrategy;
-    uint256 originalStartTime;
-    SessionState state;
-    address creator;
-    bool verificationRequired;
-}
+<h3 id="xptiersnotset"><a class="header" href="#xptiersnotset">XpTiersNotSet</a></h3>
+<pre><code class="language-solidity">error XpTiersNotSet(uint256 sessionId);
 </code></pre>
-<p><strong>Properties</strong></p>
-<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>gameId</code></td><td><code>uint256</code></td><td>Unique identifier for the game</td></tr>
-<tr><td><code>startTime</code></td><td><code>uint256</code></td><td>Timestamp when the game is scheduled to start</td></tr>
-<tr><td><code>endTime</code></td><td><code>uint256</code></td><td>Timestamp when the game is scheduled to end</td></tr>
-<tr><td><code>numContestants</code></td><td><code>uint256</code></td><td>Current number of participants in the game</td></tr>
-<tr><td><code>sessionStrategy</code></td><td><code>address</code></td><td>Address of the contract implementing the session evaluation logic</td></tr>
-<tr><td><code>rewardStrategy</code></td><td><code>address</code></td><td>Address of the contract implementing the reward distribution logic</td></tr>
-<tr><td><code>originalStartTime</code></td><td><code>uint256</code></td><td>Original start time before rescheduling (0 if not rescheduled)</td></tr>
-<tr><td><code>state</code></td><td><code>SessionState</code></td><td>Current state of the game</td></tr>
-<tr><td><code>creator</code></td><td><code>address</code></td><td>Address of the game creator</td></tr>
-<tr><td><code>verificationRequired</code></td><td><code>bool</code></td><td>Whether participants need to be verified before joining</td></tr>
-</tbody></table>
-</div>
+<h3 id="rewardsnotconfigured"><a class="header" href="#rewardsnotconfigured">RewardsNotConfigured</a></h3>
+<pre><code class="language-solidity">error RewardsNotConfigured(uint256 sessionId);
+</code></pre>
+<h3 id="creationsunsettedalreadyset"><a class="header" href="#creationsunsettedalreadyset">CreationSunsettedAlreadySet</a></h3>
+<pre><code class="language-solidity">error CreationSunsettedAlreadySet();
+</code></pre>
+<h3 id="protocolisactive"><a class="header" href="#protocolisactive">ProtocolIsActive</a></h3>
+<pre><code class="language-solidity">error ProtocolIsActive();
+</code></pre>
+<h3 id="solutionnotrevealed"><a class="header" href="#solutionnotrevealed">SolutionNotRevealed</a></h3>
+<pre><code class="language-solidity">error SolutionNotRevealed(uint256 sessionId, uint256 questionId);
+</code></pre>
+<h3 id="alreadyjoined"><a class="header" href="#alreadyjoined">AlreadyJoined</a></h3>
+<pre><code class="language-solidity">error AlreadyJoined(uint256 sessionId, address player);
+</code></pre>
+<h3 id="rescheduletoofarinfuture"><a class="header" href="#rescheduletoofarinfuture">RescheduleTooFarInFuture</a></h3>
+<pre><code class="language-solidity">error RescheduleTooFarInFuture(uint256 maxStartTime, uint256 newStartTime);
+</code></pre>
+<h3 id="invalidpromptcount"><a class="header" href="#invalidpromptcount">InvalidPromptCount</a></h3>
+<pre><code class="language-solidity">error InvalidPromptCount(uint256 promptCount);
+</code></pre>
+<h3 id="concludegraceperiodnotpassed"><a class="header" href="#concludegraceperiodnotpassed">ConcludeGracePeriodNotPassed</a></h3>
+<pre><code class="language-solidity">error ConcludeGracePeriodNotPassed(uint256 graceEndTime, uint256 currentTime);
+</code></pre>
+
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
@@ -894,22 +929,6 @@
 
         </div>
 
-        <!-- Livereload script (if served using the cli tool) -->
-        <script>
-            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
-            const socket = new WebSocket(wsAddress);
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
 
 
 

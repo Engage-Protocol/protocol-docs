@@ -162,7 +162,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="sessionresultasserter"><a class="header" href="#sessionresultasserter">SessionResultAsserter</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/offchain/uma/SessionResultAsserter.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/5fe807cf0a52648eb62fc6cc5cfee20341dc4b8e/src/offchain/uma/SessionResultAsserter.sol">Git Source</a></p>
 <h2 id="state-variables"><a class="header" href="#state-variables">State Variables</a></h2>
 <h3 id="usdc"><a class="header" href="#usdc">usdc</a></h3>
 <pre><code class="language-solidity">IERC20 public immutable usdc;
@@ -177,7 +177,7 @@
 <pre><code class="language-solidity">bytes32 public immutable defaultIdentifier;
 </code></pre>
 <h3 id="assertions"><a class="header" href="#assertions">assertions</a></h3>
-<pre><code class="language-solidity">mapping(bytes32 =&gt; Assertion) public assertions;
+<pre><code class="language-solidity">mapping(bytes32 assertionId =&gt; Assertion) public assertions;
 </code></pre>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="constructor"><a class="header" href="#constructor">constructor</a></h3>
@@ -194,11 +194,12 @@
     address[] calldata winners,
     uint256[] calldata totalXPs,
     uint256[] calldata totalTimes,
+    bytes[] calldata solutions,
     address asserter
 ) internal returns (bytes32 assertionId);
 </code></pre>
 <h3 id="assertionresolvedcallback"><a class="header" href="#assertionresolvedcallback">assertionResolvedCallback</a></h3>
-<pre><code class="language-solidity">function assertionResolvedCallback(bytes32 assertionId, bool assertedTruthfully) public;
+<pre><code class="language-solidity">function assertionResolvedCallback(bytes32 assertionId, bool assertedTruthfully) external virtual;
 </code></pre>
 <h3 id="assertiondisputedcallback"><a class="header" href="#assertiondisputedcallback">assertionDisputedCallback</a></h3>
 <pre><code class="language-solidity">function assertionDisputedCallback(bytes32 assertionId) public;
@@ -208,6 +209,9 @@
 </code></pre>
 <h3 id="concat-1"><a class="header" href="#concat-1">concat</a></h3>
 <pre><code class="language-solidity">function concat(uint256[] calldata data) internal pure returns (string memory);
+</code></pre>
+<h3 id="concat-2"><a class="header" href="#concat-2">concat</a></h3>
+<pre><code class="language-solidity">function concat(bytes[] calldata data) internal pure returns (string memory);
 </code></pre>
 <h2 id="events"><a class="header" href="#events">Events</a></h2>
 <h3 id="dataasserted"><a class="header" href="#dataasserted">DataAsserted</a></h3>
@@ -243,6 +247,7 @@
     address[] winners;
     uint256[] totalXPs;
     uint256[] totalTimes;
+    bytes[] solutions;
 }
 </code></pre>
 
@@ -275,22 +280,6 @@
 
         </div>
 
-        <!-- Livereload script (if served using the cli tool) -->
-        <script>
-            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
-            const socket = new WebSocket(wsAddress);
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
 
 
 

@@ -162,7 +162,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="fixedranksreward"><a class="header" href="#fixedranksreward">FixedRanksReward</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/reward/FixedRanksReward.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/5fe807cf0a52648eb62fc6cc5cfee20341dc4b8e/src/reward/FixedRanksReward.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="/src/reward/IRewardStrategy.sol/interface.IRewardStrategy.html">IRewardStrategy</a>, ERC165</p>
 <p>Contract for distributing rewards based on predefined rank percentages</p>
@@ -188,6 +188,20 @@ distribution percentages.</em></p>
 <h3 id="constructor"><a class="header" href="#constructor">constructor</a></h3>
 <pre><code class="language-solidity">constructor(address _sessionManager);
 </code></pre>
+<h3 id="rewardsconfigured"><a class="header" href="#rewardsconfigured">rewardsConfigured</a></h3>
+<p>Checks if rewards are configured for a specific session</p>
+<pre><code class="language-solidity">function rewardsConfigured(uint256 sessionId) external view returns (bool);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>bool</code></td><td>True if rewards are configured, false otherwise</td></tr>
+</tbody></table>
+</div>
 <h3 id="setrankedrewards"><a class="header" href="#setrankedrewards">setRankedRewards</a></h3>
 <p>Sets the reward distribution percentages for a specific game</p>
 <p><em>Only the game creator can call this function. The total of all percentages
@@ -209,7 +223,7 @@ must equal 100% (10,000 basis points). Can only be set once per game.</em></p>
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td></td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
 <tr><td><code>winners</code></td><td><code>address[]</code></td><td>Array of winner addresses in order of placement (1st place first)</td></tr>
 <tr><td><code>prizePool</code></td><td><code>uint256</code></td><td>The total prize pool to be distributed</td></tr>
 </tbody></table>
@@ -228,7 +242,7 @@ must equal 100% (10,000 basis points). Can only be set once per game.</em></p>
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td></td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
 <tr><td><code>&lt;none&gt;</code></td><td><code>address[]</code></td><td></td></tr>
 <tr><td><code>position</code></td><td><code>uint256</code></td><td>The position to calculate reward for (0-indexed)</td></tr>
 <tr><td><code>prizePool</code></td><td><code>uint256</code></td><td>The total prize pool to be distributed</td></tr>
@@ -247,11 +261,8 @@ must equal 100% (10,000 basis points). Can only be set once per game.</em></p>
 <pre><code class="language-solidity">event RankedRewardsUpdated(uint256 indexed sessionId, uint256[] rankedRewards);
 </code></pre>
 <h2 id="errors"><a class="header" href="#errors">Errors</a></h2>
-<h3 id="rankedrewardsnotset"><a class="header" href="#rankedrewardsnotset">RankedRewardsNotSet</a></h3>
-<pre><code class="language-solidity">error RankedRewardsNotSet(uint256 sessionId);
-</code></pre>
-<h3 id="invalidranks"><a class="header" href="#invalidranks">InvalidRanks</a></h3>
-<pre><code class="language-solidity">error InvalidRanks(uint256 sessionId, uint256 numRanks);
+<h3 id="getrewardoutofrange"><a class="header" href="#getrewardoutofrange">GetRewardOutOfRange</a></h3>
+<pre><code class="language-solidity">error GetRewardOutOfRange(uint256 sessionId);
 </code></pre>
 <h3 id="invalidtotalpoints"><a class="header" href="#invalidtotalpoints">InvalidTotalPoints</a></h3>
 <pre><code class="language-solidity">error InvalidTotalPoints(uint256 sessionId, uint256 numPoints);
@@ -286,22 +297,6 @@ must equal 100% (10,000 basis points). Can only be set once per game.</em></p>
 
         </div>
 
-        <!-- Livereload script (if served using the cli tool) -->
-        <script>
-            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
-            const socket = new WebSocket(wsAddress);
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
 
 
 

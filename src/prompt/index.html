@@ -166,6 +166,7 @@
 <li><a href="IPromptStrategy.sol/struct.BaseReaction.html">BaseReaction</a></li>
 <li><a href="IPromptStrategy.sol/struct.Result.html">Result</a></li>
 <li><a href="IPromptStrategy.sol/interface.IPromptStrategy.html">IPromptStrategy</a></li>
+<li><a href="ISolutionRecorder.sol/interface.ISolutionRecorder.html">ISolutionRecorder</a></li>
 <li><a href="MajorityChoicePrompt.sol/contract.MajorityChoicePrompt.html">MajorityChoicePrompt</a></li>
 <li><a href="SPBinaryPrompt.sol/contract.SPBinaryPrompt.html">SPBinaryPrompt</a></li>
 <li><a href="TriviaChoicePrompt.sol/contract.TriviaChoicePrompt.html">TriviaChoicePrompt</a></li>
@@ -200,22 +201,6 @@
 
         </div>
 
-        <!-- Livereload script (if served using the cli tool) -->
-        <script>
-            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
-            const socket = new WebSocket(wsAddress);
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
 
 
 

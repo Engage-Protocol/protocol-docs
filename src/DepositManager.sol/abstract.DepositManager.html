@@ -162,7 +162,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="depositmanager"><a class="header" href="#depositmanager">DepositManager</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/DepositManager.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/5fe807cf0a52648eb62fc6cc5cfee20341dc4b8e/src/DepositManager.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="/src/SessionManagerBase.sol/abstract.SessionManagerBase.html">SessionManagerBase</a></p>
 <p>Manages deposits, fees, and rewards for sessions</p>
@@ -171,31 +171,31 @@
 <h2 id="state-variables"><a class="header" href="#state-variables">State Variables</a></h2>
 <h3 id="gamepools"><a class="header" href="#gamepools">gamePools</a></h3>
 <p>Mapping of session ID to its prize pool and fee configuration</p>
-<pre><code class="language-solidity">mapping(uint256 gameId =&gt; GamePool pool) public gamePools;
+<pre><code class="language-solidity">mapping(uint256 sessionId =&gt; GamePool pool) public gamePools;
 </code></pre>
 <h3 id="hasclaimed"><a class="header" href="#hasclaimed">hasClaimed</a></h3>
-<p>Mapping of game ID and player address to whether they have claimed their reward</p>
-<pre><code class="language-solidity">mapping(uint256 =&gt; mapping(address =&gt; bool)) public hasClaimed;
+<p>Mapping of session ID and player address to whether they have claimed their reward</p>
+<pre><code class="language-solidity">mapping(uint256 sessionId =&gt; mapping(address player =&gt; bool)) public hasClaimed;
 </code></pre>
 <h3 id="hasrefunded"><a class="header" href="#hasrefunded">hasRefunded</a></h3>
-<p>Mapping of game ID and player address to whether they have received a refund</p>
-<pre><code class="language-solidity">mapping(uint256 =&gt; mapping(address =&gt; bool)) public hasRefunded;
+<p>Mapping of session ID and player address to whether they have received a refund</p>
+<pre><code class="language-solidity">mapping(uint256 sessionId =&gt; mapping(address player =&gt; bool)) public hasRefunded;
 </code></pre>
 <h3 id="sponsoramounts"><a class="header" href="#sponsoramounts">sponsorAmounts</a></h3>
-<p>Mapping of sponsor address and game ID to the amount they sponsored</p>
-<pre><code class="language-solidity">mapping(address sponsor =&gt; mapping(uint256 gameId =&gt; uint256 amount)) public sponsorAmounts;
+<p>Mapping of sponsor address and session ID to the amount they sponsored</p>
+<pre><code class="language-solidity">mapping(address sponsor =&gt; mapping(uint256 sessionId =&gt; uint256 amount)) public sponsorAmounts;
 </code></pre>
 <h3 id="referralrewards"><a class="header" href="#referralrewards">referralRewards</a></h3>
-<p>Mapping of game ID and referrer address to their referral reward amount</p>
-<pre><code class="language-solidity">mapping(uint256 gameId =&gt; mapping(address referrer =&gt; uint256 referralReward)) public referralRewards;
+<p>Mapping of session ID and referrer address to their referral reward amount</p>
+<pre><code class="language-solidity">mapping(uint256 sessionId =&gt; mapping(address referrer =&gt; uint256 referralReward)) public referralRewards;
 </code></pre>
 <h3 id="protocolfee"><a class="header" href="#protocolfee">protocolFee</a></h3>
 <p>Protocol fee percentage in basis points</p>
-<pre><code class="language-solidity">uint256 public protocolFee = 500;
+<pre><code class="language-solidity">uint128 public protocolFee = 500;
 </code></pre>
 <h3 id="maxcreatorfee"><a class="header" href="#maxcreatorfee">maxCreatorFee</a></h3>
 <p>Maximum allowed creator fee percentage in basis points</p>
-<pre><code class="language-solidity">uint256 public maxCreatorFee = 1000;
+<pre><code class="language-solidity">uint128 public maxCreatorFee = 1000;
 </code></pre>
 <h3 id="referrer_fee"><a class="header" href="#referrer_fee">REFERRER_FEE</a></h3>
 <p>Referrer fee percentage in basis points</p>
@@ -215,11 +215,11 @@
 </code></pre>
 <h3 id="getrewards"><a class="header" href="#getrewards">getRewards</a></h3>
 <p>Calculates the total rewards available for distribution to winners</p>
-<pre><code class="language-solidity">function getRewards(uint256 gameId) public view returns (uint256);
+<pre><code class="language-solidity">function getRewards(uint256 sessionId) public view returns (uint256);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>gameId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session</td></tr>
 </tbody></table>
 </div>
 <p><strong>Returns</strong></p>
@@ -229,51 +229,53 @@
 </div>
 <h3 id="sponsorgame"><a class="header" href="#sponsorgame">sponsorGame</a></h3>
 <p>Allows a sponsor to add funds to a session's prize pool</p>
-<pre><code class="language-solidity">function sponsorGame(uint256 gameId, uint256 amount) external;
+<pre><code class="language-solidity">function sponsorGame(uint256 sessionId, uint256 amount)
+    external
+    onlyStates(sessionId, SessionState.Created, SessionState.Ongoing);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>gameId</code></td><td><code>uint256</code></td><td>The ID of the session to sponsor</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>The ID of the session to sponsor</td></tr>
 <tr><td><code>amount</code></td><td><code>uint256</code></td><td>The amount of tokens to sponsor</td></tr>
 </tbody></table>
 </div>
 <h3 id="_claimreferralreward"><a class="header" href="#_claimreferralreward">_claimReferralReward</a></h3>
-<pre><code class="language-solidity">function _claimReferralReward(uint256 gameId) internal;
+<pre><code class="language-solidity">function _claimReferralReward(uint256 sessionId) internal;
 </code></pre>
 <h3 id="_distributefees"><a class="header" href="#_distributefees">_distributeFees</a></h3>
-<pre><code class="language-solidity">function _distributeFees(uint256 gameId, address creator, address protocolTreasury) internal;
+<pre><code class="language-solidity">function _distributeFees(uint256 sessionId, address creator, address protocolTreasury) internal;
 </code></pre>
 <h3 id="_refundsponsorfunds"><a class="header" href="#_refundsponsorfunds">_refundSponsorFunds</a></h3>
-<pre><code class="language-solidity">function _refundSponsorFunds(uint256 gameId, address sponsor) internal;
+<pre><code class="language-solidity">function _refundSponsorFunds(uint256 sessionId, address sponsor) internal;
 </code></pre>
 <h3 id="_distributerewards"><a class="header" href="#_distributerewards">_distributeRewards</a></h3>
-<pre><code class="language-solidity">function _distributeRewards(uint256 gameId, address winner, uint256 reward) internal;
+<pre><code class="language-solidity">function _distributeRewards(uint256 sessionId, address winner, uint256 reward) internal;
 </code></pre>
 <h3 id="_refundentryfee"><a class="header" href="#_refundentryfee">_refundEntryFee</a></h3>
-<pre><code class="language-solidity">function _refundEntryFee(uint256 gameId, address player) internal;
+<pre><code class="language-solidity">function _refundEntryFee(uint256 sessionId, address player) internal;
 </code></pre>
 <h3 id="_payentryfee"><a class="header" href="#_payentryfee">_payEntryFee</a></h3>
-<pre><code class="language-solidity">function _payEntryFee(uint256 gameId, address player) internal;
+<pre><code class="language-solidity">function _payEntryFee(uint256 sessionId, address player) internal;
 </code></pre>
 <h3 id="_creategamepool"><a class="header" href="#_creategamepool">_createGamePool</a></h3>
-<pre><code class="language-solidity">function _createGamePool(uint256 gameId, uint256 _ticketPrice, uint256 _creatorFee, address _token) internal;
+<pre><code class="language-solidity">function _createGamePool(uint256 sessionId, uint256 _ticketPrice, uint128 _creatorFee, address _token) internal;
 </code></pre>
 <h3 id="setmaxfees"><a class="header" href="#setmaxfees">setMaxFees</a></h3>
 <p>Sets the maximum allowed creator fee and protocol fee percentages</p>
 <p><em>Only callable by the contract owner</em></p>
 <p><em>The sum of fees cannot exceed MAX_GAME_FEES</em></p>
-<pre><code class="language-solidity">function setMaxFees(uint256 _maxCreatorFee, uint256 _protocolFee) external onlyRole(PROTOCOL_ADMIN_ROLE);
+<pre><code class="language-solidity">function setMaxFees(uint128 _maxCreatorFee, uint128 _protocolFee) external onlyRole(PROTOCOL_ADMIN_ROLE);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_maxCreatorFee</code></td><td><code>uint256</code></td><td>The new maximum creator fee percentage in basis points</td></tr>
-<tr><td><code>_protocolFee</code></td><td><code>uint256</code></td><td>The new protocol fee percentage in basis points</td></tr>
+<tr><td><code>_maxCreatorFee</code></td><td><code>uint128</code></td><td>The new maximum creator fee percentage in basis points</td></tr>
+<tr><td><code>_protocolFee</code></td><td><code>uint128</code></td><td>The new protocol fee percentage in basis points</td></tr>
 </tbody></table>
 </div>
 <h2 id="events"><a class="header" href="#events">Events</a></h2>
 <h3 id="feesdistributed"><a class="header" href="#feesdistributed">FeesDistributed</a></h3>
 <pre><code class="language-solidity">event FeesDistributed(
-    uint256 indexed gameId,
+    uint256 indexed sessionId,
     address token,
     address indexed creator,
     uint256 creatorFee,
@@ -285,35 +287,35 @@
 <pre><code class="language-solidity">event Deposit(address indexed player, uint256 amount);
 </code></pre>
 <h3 id="gamesponsored"><a class="header" href="#gamesponsored">GameSponsored</a></h3>
-<pre><code class="language-solidity">event GameSponsored(uint256 indexed gameId, address indexed sponsor, address token, uint256 amount);
+<pre><code class="language-solidity">event GameSponsored(uint256 indexed sessionId, address indexed sponsor, address token, uint256 amount);
 </code></pre>
 <h3 id="refundsponsorfunds"><a class="header" href="#refundsponsorfunds">RefundSponsorFunds</a></h3>
-<pre><code class="language-solidity">event RefundSponsorFunds(uint256 indexed gameId, address indexed sponsor, address token, uint256 amount);
+<pre><code class="language-solidity">event RefundSponsorFunds(uint256 indexed sessionId, address indexed sponsor, address token, uint256 amount);
 </code></pre>
 <h3 id="maxfeesset"><a class="header" href="#maxfeesset">MaxFeesSet</a></h3>
 <pre><code class="language-solidity">event MaxFeesSet(uint256 maxCreatorFee, uint256 protocolFee);
 </code></pre>
 <h3 id="referralrewardclaimed"><a class="header" href="#referralrewardclaimed">ReferralRewardClaimed</a></h3>
-<pre><code class="language-solidity">event ReferralRewardClaimed(uint256 indexed gameId, address indexed referrer, address indexed token, uint256 amount);
+<pre><code class="language-solidity">event ReferralRewardClaimed(uint256 indexed sessionId, address indexed referrer, address indexed token, uint256 amount);
 </code></pre>
 <h2 id="errors"><a class="header" href="#errors">Errors</a></h2>
 <h3 id="insufficientbalance"><a class="header" href="#insufficientbalance">InsufficientBalance</a></h3>
 <pre><code class="language-solidity">error InsufficientBalance(address player, address token, uint256 balance, uint256 required);
 </code></pre>
 <h3 id="alreadyclaimed"><a class="header" href="#alreadyclaimed">AlreadyClaimed</a></h3>
-<pre><code class="language-solidity">error AlreadyClaimed(address player, uint256 gameId);
+<pre><code class="language-solidity">error AlreadyClaimed(address player, uint256 sessionId);
 </code></pre>
 <h3 id="feesalreadypaid"><a class="header" href="#feesalreadypaid">FeesAlreadyPaid</a></h3>
-<pre><code class="language-solidity">error FeesAlreadyPaid(uint256 gameId);
+<pre><code class="language-solidity">error FeesAlreadyPaid(uint256 sessionId);
 </code></pre>
 <h3 id="norewardavailable"><a class="header" href="#norewardavailable">NoRewardAvailable</a></h3>
-<pre><code class="language-solidity">error NoRewardAvailable(uint256 gameId);
+<pre><code class="language-solidity">error NoRewardAvailable(uint256 sessionId);
 </code></pre>
 <h3 id="notenoughfunds"><a class="header" href="#notenoughfunds">NotEnoughFunds</a></h3>
 <pre><code class="language-solidity">error NotEnoughFunds(address token, uint256 balance);
 </code></pre>
 <h3 id="alreadyrefunded"><a class="header" href="#alreadyrefunded">AlreadyRefunded</a></h3>
-<pre><code class="language-solidity">error AlreadyRefunded(address player, uint256 gameId);
+<pre><code class="language-solidity">error AlreadyRefunded(address player, uint256 sessionId);
 </code></pre>
 <h3 id="invalidcreatorfee"><a class="header" href="#invalidcreatorfee">InvalidCreatorFee</a></h3>
 <pre><code class="language-solidity">error InvalidCreatorFee(uint256 creatorFee, uint256 maxCreatorFee);
@@ -325,10 +327,10 @@
 <h3 id="gamepool"><a class="header" href="#gamepool">GamePool</a></h3>
 <p>Represents a session's prize pool and fee configuration</p>
 <pre><code class="language-solidity">struct GamePool {
-    uint256 gameId;
+    uint256 sessionId;
     uint256 ticketPrice;
-    uint256 creatorFee;
-    uint256 protocolFee;
+    uint128 creatorFee;
+    uint128 protocolFee;
     uint256 totalCollectedAmount;
     address token;
     bool feesPaid;
@@ -336,10 +338,10 @@
 </code></pre>
 <p><strong>Properties</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>gameId</code></td><td><code>uint256</code></td><td>Unique identifier for the session</td></tr>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td>Unique identifier for the session</td></tr>
 <tr><td><code>ticketPrice</code></td><td><code>uint256</code></td><td>Price for each participant to join the session</td></tr>
-<tr><td><code>creatorFee</code></td><td><code>uint256</code></td><td>Percentage of fees that go to the session creator (in basis points)</td></tr>
-<tr><td><code>protocolFee</code></td><td><code>uint256</code></td><td>Percentage of fees that go to the protocol (in basis points)</td></tr>
+<tr><td><code>creatorFee</code></td><td><code>uint128</code></td><td>Percentage of fees that go to the session creator (in basis points)</td></tr>
+<tr><td><code>protocolFee</code></td><td><code>uint128</code></td><td>Percentage of fees that go to the protocol (in basis points)</td></tr>
 <tr><td><code>totalCollectedAmount</code></td><td><code>uint256</code></td><td>Total amount of tokens collected in the pool</td></tr>
 <tr><td><code>token</code></td><td><code>address</code></td><td>Address of the token used for payments</td></tr>
 <tr><td><code>feesPaid</code></td><td><code>bool</code></td><td>Whether the creator and protocol fees have been distributed</td></tr>
@@ -374,22 +376,6 @@
 
         </div>
 
-        <!-- Livereload script (if served using the cli tool) -->
-        <script>
-            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
-            const socket = new WebSocket(wsAddress);
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
 
 
 

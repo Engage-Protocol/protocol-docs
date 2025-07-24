@@ -162,7 +162,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="questionmanager"><a class="header" href="#questionmanager">QuestionManager</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/QuestionManager.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/5fe807cf0a52648eb62fc6cc5cfee20341dc4b8e/src/QuestionManager.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="/src/DepositManager.sol/abstract.DepositManager.html">DepositManager</a></p>
 <p>Manages commit and reveal of questions for a session</p>
@@ -174,10 +174,10 @@
 <pre><code class="language-solidity">uint256 public nextQuestionId;
 </code></pre>
 <h3 id="gamequestions"><a class="header" href="#gamequestions">gameQuestions</a></h3>
-<pre><code class="language-solidity">mapping(uint256 =&gt; uint256[]) public gameQuestions;
+<pre><code class="language-solidity">mapping(uint256 sessionId =&gt; uint256[]) public gameQuestions;
 </code></pre>
 <h3 id="questioncommitment"><a class="header" href="#questioncommitment">questionCommitment</a></h3>
-<pre><code class="language-solidity">mapping(uint256 =&gt; PromptInitData) public questionCommitment;
+<pre><code class="language-solidity">mapping(uint256 questionId =&gt; PromptInitData) public questionCommitment;
 </code></pre>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="constructor"><a class="header" href="#constructor">constructor</a></h3>
@@ -185,11 +185,11 @@
 </code></pre>
 <h3 id="_commitquestions"><a class="header" href="#_commitquestions">_commitQuestions</a></h3>
 <p>Commit questions before the game starts to ensure integrity</p>
-<pre><code class="language-solidity">function _commitQuestions(uint256 _gameId, bytes32[] memory _questionHashes, address[] memory _promptStrategies)
+<pre><code class="language-solidity">function _commitQuestions(uint256 _sessionId, bytes32[] memory _questionHashes, address[] memory _promptStrategies)
     internal;
 </code></pre>
 <h3 id="_revealprompt"><a class="header" href="#_revealprompt">_revealPrompt</a></h3>
-<pre><code class="language-solidity">function _revealPrompt(uint256 _gameId, uint256 _questionId, bytes memory _prompt, uint256 _salt) internal;
+<pre><code class="language-solidity">function _revealPrompt(uint256 _sessionId, uint256 _questionId, bytes memory _prompt, uint256 _salt) internal;
 </code></pre>
 <h3 id="_isrevealed"><a class="header" href="#_isrevealed">_isRevealed</a></h3>
 <pre><code class="language-solidity">function _isRevealed(uint256 _questionId) internal view returns (bool);
@@ -199,30 +199,32 @@
 </code></pre>
 <h3 id="getquestionsforgame"><a class="header" href="#getquestionsforgame">getQuestionsForGame</a></h3>
 <p>Retrieve all question IDs for a given game</p>
-<pre><code class="language-solidity">function getQuestionsForGame(uint256 _gameId) external view returns (uint256[] memory);
+<pre><code class="language-solidity">function getQuestionsForGame(uint256 _sessionId) external view returns (uint256[] memory);
 </code></pre>
 <h2 id="events"><a class="header" href="#events">Events</a></h2>
 <h3 id="questioncommitted"><a class="header" href="#questioncommitted">QuestionCommitted</a></h3>
-<pre><code class="language-solidity">event QuestionCommitted(uint256 indexed gameId, uint256 indexed questionId, bytes32 promptHash, address promptStrategy);
+<pre><code class="language-solidity">event QuestionCommitted(
+    uint256 indexed sessionId, uint256 indexed questionId, bytes32 promptHash, address promptStrategy
+);
 </code></pre>
 <h3 id="questionrevealed"><a class="header" href="#questionrevealed">QuestionRevealed</a></h3>
-<pre><code class="language-solidity">event QuestionRevealed(uint256 indexed gameId, uint256 indexed questionId, bytes prompt);
+<pre><code class="language-solidity">event QuestionRevealed(uint256 indexed sessionId, uint256 indexed questionId, bytes prompt);
 </code></pre>
 <h2 id="errors"><a class="header" href="#errors">Errors</a></h2>
 <h3 id="gamequestionsalreadycommitted"><a class="header" href="#gamequestionsalreadycommitted">GameQuestionsAlreadyCommitted</a></h3>
-<pre><code class="language-solidity">error GameQuestionsAlreadyCommitted(uint256 gameId);
+<pre><code class="language-solidity">error GameQuestionsAlreadyCommitted(uint256 sessionId);
 </code></pre>
 <h3 id="invalidquestionreveal"><a class="header" href="#invalidquestionreveal">InvalidQuestionReveal</a></h3>
-<pre><code class="language-solidity">error InvalidQuestionReveal(uint256 gameId, uint256 questionId);
+<pre><code class="language-solidity">error InvalidQuestionReveal(uint256 sessionId, uint256 questionId);
 </code></pre>
 <h3 id="invalidquestionhash"><a class="header" href="#invalidquestionhash">InvalidQuestionHash</a></h3>
-<pre><code class="language-solidity">error InvalidQuestionHash(uint256 gameId, uint256 questionId);
+<pre><code class="language-solidity">error InvalidQuestionHash(uint256 sessionId, uint256 questionId);
 </code></pre>
 <h3 id="questionalreadyrevealed"><a class="header" href="#questionalreadyrevealed">QuestionAlreadyRevealed</a></h3>
-<pre><code class="language-solidity">error QuestionAlreadyRevealed(uint256 gameId, uint256 questionId);
+<pre><code class="language-solidity">error QuestionAlreadyRevealed(uint256 sessionId, uint256 questionId);
 </code></pre>
 <h3 id="questionalreadycommitted"><a class="header" href="#questionalreadycommitted">QuestionAlreadyCommitted</a></h3>
-<pre><code class="language-solidity">error QuestionAlreadyCommitted(uint256 gameId, uint256 questionId);
+<pre><code class="language-solidity">error QuestionAlreadyCommitted(uint256 sessionId, uint256 questionId);
 </code></pre>
 <h3 id="emptyarray"><a class="header" href="#emptyarray">EmptyArray</a></h3>
 <pre><code class="language-solidity">error EmptyArray();
@@ -231,12 +233,14 @@
 <h3 id="promptinitdata"><a class="header" href="#promptinitdata">PromptInitData</a></h3>
 <p>Represents the initialization data for a question prompt</p>
 <pre><code class="language-solidity">struct PromptInitData {
+    uint256 sessionId;
     bytes32 promptHash;
     address promptStrategy;
 }
 </code></pre>
 <p><strong>Properties</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>sessionId</code></td><td><code>uint256</code></td><td></td></tr>
 <tr><td><code>promptHash</code></td><td><code>bytes32</code></td><td>Hash of the question prompt and its salt</td></tr>
 <tr><td><code>promptStrategy</code></td><td><code>address</code></td><td>Address of the contract implementing the prompt strategy logic</td></tr>
 </tbody></table>
@@ -270,22 +274,6 @@
 
         </div>
 
-        <!-- Livereload script (if served using the cli tool) -->
-        <script>
-            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
-            const socket = new WebSocket(wsAddress);
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
 
 
 

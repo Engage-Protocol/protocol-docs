@@ -162,25 +162,25 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="registry"><a class="header" href="#registry">Registry</a></h1>
-<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/62e4edb5917eb23b13556127a45784792d64552a/src/Registry.sol">Git Source</a></p>
+<p><a href="https://github.com/Engage-Protocol/engage-protocol/blob/5fe807cf0a52648eb62fc6cc5cfee20341dc4b8e/src/Registry.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 AccessControl</p>
 <p>Registry contract for managing the protocol's components which are allowed to be used in a new session</p>
 <h2 id="state-variables"><a class="header" href="#state-variables">State Variables</a></h2>
 <h3 id="promptstrategies"><a class="header" href="#promptstrategies">promptStrategies</a></h3>
-<pre><code class="language-solidity">mapping(address =&gt; bool) public promptStrategies;
+<pre><code class="language-solidity">mapping(address =&gt; bool enabled) public promptStrategies;
 </code></pre>
 <h3 id="sessionstrategies"><a class="header" href="#sessionstrategies">sessionStrategies</a></h3>
-<pre><code class="language-solidity">mapping(address =&gt; bool) public sessionStrategies;
+<pre><code class="language-solidity">mapping(address =&gt; bool enabled) public sessionStrategies;
 </code></pre>
 <h3 id="rewardstrategies"><a class="header" href="#rewardstrategies">rewardStrategies</a></h3>
-<pre><code class="language-solidity">mapping(address =&gt; bool) public rewardStrategies;
+<pre><code class="language-solidity">mapping(address =&gt; bool enabled) public rewardStrategies;
 </code></pre>
 <h3 id="paymenttokens"><a class="header" href="#paymenttokens">paymentTokens</a></h3>
-<pre><code class="language-solidity">mapping(address =&gt; bool) public paymentTokens;
+<pre><code class="language-solidity">mapping(address =&gt; bool enabled) public paymentTokens;
 </code></pre>
 <h3 id="engageprotocols"><a class="header" href="#engageprotocols">engageProtocols</a></h3>
-<pre><code class="language-solidity">mapping(address =&gt; bool) public engageProtocols;
+<pre><code class="language-solidity">mapping(address =&gt; bool enabled) public engageProtocols;
 </code></pre>
 <h3 id="referrers"><a class="header" href="#referrers">referrers</a></h3>
 <p>Mapping of player address to their referrer</p>
@@ -188,6 +188,9 @@ AccessControl</p>
 </code></pre>
 <h3 id="protocoltreasury"><a class="header" href="#protocoltreasury">protocolTreasury</a></h3>
 <pre><code class="language-solidity">address public protocolTreasury;
+</code></pre>
+<h3 id="sunsetvalues"><a class="header" href="#sunsetvalues">sunsetValues</a></h3>
+<pre><code class="language-solidity">SunsetValues public sunsetValues = SunsetValues({sessionId: 1, questionId: 0, status: ProtocolStatus.INITIAL});
 </code></pre>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="constructor"><a class="header" href="#constructor">constructor</a></h3>
@@ -199,10 +202,16 @@ AccessControl</p>
 <tr><td><code>_protocolTreasury</code></td><td><code>address</code></td><td>The address of the protocol treasury</td></tr>
 </tbody></table>
 </div>
+<h3 id="onlyvalidaddress"><a class="header" href="#onlyvalidaddress">onlyValidAddress</a></h3>
+<pre><code class="language-solidity">modifier onlyValidAddress(address _address);
+</code></pre>
 <h3 id="registersessionstrategy"><a class="header" href="#registersessionstrategy">registerSessionStrategy</a></h3>
 <p>Registers or updates a session strategy contract which can be used in a new session</p>
 <p><em>Verifies that the contract implements ISessionStrategy interface</em></p>
-<pre><code class="language-solidity">function registerSessionStrategy(address _sessionStrategy, bool enabled) external onlyRole(PROTOCOL_ADMIN_ROLE);
+<pre><code class="language-solidity">function registerSessionStrategy(address _sessionStrategy, bool enabled)
+    external
+    onlyRole(PROTOCOL_ADMIN_ROLE)
+    onlyValidAddress(_sessionStrategy);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -213,7 +222,10 @@ AccessControl</p>
 <h3 id="registerpromptstrategy"><a class="header" href="#registerpromptstrategy">registerPromptStrategy</a></h3>
 <p>Registers or updates a prompt strategy contract which can be used in a new session</p>
 <p><em>Verifies that the contract implements IPromptStrategy interface</em></p>
-<pre><code class="language-solidity">function registerPromptStrategy(address _promptStrategy, bool enabled) external onlyRole(PROTOCOL_ADMIN_ROLE);
+<pre><code class="language-solidity">function registerPromptStrategy(address _promptStrategy, bool enabled)
+    external
+    onlyRole(PROTOCOL_ADMIN_ROLE)
+    onlyValidAddress(_promptStrategy);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -224,7 +236,10 @@ AccessControl</p>
 <h3 id="registerrewardstrategy"><a class="header" href="#registerrewardstrategy">registerRewardStrategy</a></h3>
 <p>Registers or updates a reward strategy contract which can be used in a new session</p>
 <p><em>Verifies that the contract implements IRewardStrategy interface</em></p>
-<pre><code class="language-solidity">function registerRewardStrategy(address _rewardStrategy, bool enabled) external onlyRole(PROTOCOL_ADMIN_ROLE);
+<pre><code class="language-solidity">function registerRewardStrategy(address _rewardStrategy, bool enabled)
+    external
+    onlyRole(PROTOCOL_ADMIN_ROLE)
+    onlyValidAddress(_rewardStrategy);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -234,7 +249,10 @@ AccessControl</p>
 </div>
 <h3 id="registerpaymenttoken"><a class="header" href="#registerpaymenttoken">registerPaymentToken</a></h3>
 <p>Registers or updates a payment token</p>
-<pre><code class="language-solidity">function registerPaymentToken(address _paymentToken, bool enabled) external onlyRole(PROTOCOL_ADMIN_ROLE);
+<pre><code class="language-solidity">function registerPaymentToken(address _paymentToken, bool enabled)
+    external
+    onlyRole(PROTOCOL_ADMIN_ROLE)
+    onlyValidAddress(_paymentToken);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -244,7 +262,10 @@ AccessControl</p>
 </div>
 <h3 id="registerengageprotocol"><a class="header" href="#registerengageprotocol">registerEngageProtocol</a></h3>
 <p>Registers a new version of the engage protocol contract</p>
-<pre><code class="language-solidity">function registerEngageProtocol(address _engageProtocol) external onlyRole(PROTOCOL_ADMIN_ROLE);
+<pre><code class="language-solidity">function registerEngageProtocol(address _engageProtocol)
+    external
+    onlyRole(PROTOCOL_ADMIN_ROLE)
+    onlyValidAddress(_engageProtocol);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -253,7 +274,10 @@ AccessControl</p>
 </div>
 <h3 id="setprotocoltreasury"><a class="header" href="#setprotocoltreasury">setProtocolTreasury</a></h3>
 <p>Sets the protocol treasury address</p>
-<pre><code class="language-solidity">function setProtocolTreasury(address _protocolTreasury) public onlyRole(PROTOCOL_ADMIN_ROLE);
+<pre><code class="language-solidity">function setProtocolTreasury(address _protocolTreasury)
+    public
+    onlyRole(PROTOCOL_ADMIN_ROLE)
+    onlyValidAddress(_protocolTreasury);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -271,6 +295,9 @@ AccessControl</p>
 <tr><td><code>referrer</code></td><td><code>address</code></td><td>The address of the referrer</td></tr>
 </tbody></table>
 </div>
+<h3 id="setsunsetvalues"><a class="header" href="#setsunsetvalues">setSunsetValues</a></h3>
+<pre><code class="language-solidity">function setSunsetValues(uint256 _sessionId, uint256 _questionId) external;
+</code></pre>
 <h2 id="events"><a class="header" href="#events">Events</a></h2>
 <h3 id="sessionstrategyregistered"><a class="header" href="#sessionstrategyregistered">SessionStrategyRegistered</a></h3>
 <pre><code class="language-solidity">event SessionStrategyRegistered(address indexed sessionStrategy, bool enabled);
@@ -293,6 +320,9 @@ AccessControl</p>
 <h3 id="referrerupdated"><a class="header" href="#referrerupdated">ReferrerUpdated</a></h3>
 <pre><code class="language-solidity">event ReferrerUpdated(address indexed player, address indexed referrer);
 </code></pre>
+<h3 id="sunsetvaluesset"><a class="header" href="#sunsetvaluesset">SunsetValuesSet</a></h3>
+<pre><code class="language-solidity">event SunsetValuesSet(uint256 sessionId, uint256 questionId);
+</code></pre>
 <h2 id="errors"><a class="header" href="#errors">Errors</a></h2>
 <h3 id="unsupportedcontract"><a class="header" href="#unsupportedcontract">UnsupportedContract</a></h3>
 <pre><code class="language-solidity">error UnsupportedContract(address contractAddress);
@@ -302,6 +332,37 @@ AccessControl</p>
 </code></pre>
 <h3 id="cantreferself"><a class="header" href="#cantreferself">CantReferSelf</a></h3>
 <pre><code class="language-solidity">error CantReferSelf(address player);
+</code></pre>
+<h3 id="incorrectsessionid"><a class="header" href="#incorrectsessionid">IncorrectSessionId</a></h3>
+<pre><code class="language-solidity">error IncorrectSessionId(uint256 sessionId, uint256 sunsetSessionId);
+</code></pre>
+<h3 id="incorrectquestionid"><a class="header" href="#incorrectquestionid">IncorrectQuestionId</a></h3>
+<pre><code class="language-solidity">error IncorrectQuestionId(uint256 questionId, uint256 sunsetQuestionId);
+</code></pre>
+<h3 id="notengageprotocol"><a class="header" href="#notengageprotocol">NotEngageProtocol</a></h3>
+<pre><code class="language-solidity">error NotEngageProtocol(address engageProtocol);
+</code></pre>
+<h3 id="protocolisactive"><a class="header" href="#protocolisactive">ProtocolIsActive</a></h3>
+<pre><code class="language-solidity">error ProtocolIsActive();
+</code></pre>
+<h3 id="cantbereferrer"><a class="header" href="#cantbereferrer">CantBeReferrer</a></h3>
+<pre><code class="language-solidity">error CantBeReferrer(address referrer);
+</code></pre>
+<h2 id="structs"><a class="header" href="#structs">Structs</a></h2>
+<h3 id="sunsetvalues-1"><a class="header" href="#sunsetvalues-1">SunsetValues</a></h3>
+<pre><code class="language-solidity">struct SunsetValues {
+    uint256 sessionId;
+    uint256 questionId;
+    ProtocolStatus status;
+}
+</code></pre>
+<h2 id="enums"><a class="header" href="#enums">Enums</a></h2>
+<h3 id="protocolstatus"><a class="header" href="#protocolstatus">ProtocolStatus</a></h3>
+<pre><code class="language-solidity">enum ProtocolStatus {
+    INITIAL,
+    ACTIVE,
+    SUNSET
+}
 </code></pre>
 
                     </main>
@@ -333,22 +394,6 @@ AccessControl</p>
 
         </div>
 
-        <!-- Livereload script (if served using the cli tool) -->
-        <script>
-            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
-            const socket = new WebSocket(wsAddress);
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
 
 
 
